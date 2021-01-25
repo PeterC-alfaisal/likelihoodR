@@ -20,7 +20,7 @@ analyses: *t* tests, ANOVA, regression and categorical analyses. In R it
 can be installed from my GitHub repository using the **devtools** command:
 ``` r
 install.packages("devtools")
-devtools::install_github(“PeterC-alfaisal/likelihoodR”)
+devtools::install_github("PeterC-alfaisal/likelihoodR")
 ``` 
 The functions in the package complement my recent book: [Cahusac, P.M.B.
 (2020) Evidence-Based Statistics, Wiley](https://onlinelibrary.wiley.com/doi/book/10.1002/9781119549833)  
