@@ -36,7 +36,7 @@ represented by the observed mean (MLE).
 The likelihood interval can be obtained for many statistics. This represents 
 the range of values that are consistent with the observed data for a given level
 of support. For example, the S-2 likelihood interval includes all values which are 
-not more different from the maximum likelihood estimate (MLE) by more than a support
+not more different from the MLE by more than a support
 value of 2. As noted for the figure below, the S-2 interval is numerically closely equivalent 
 to the 95% confidence interval, as the support of 2 is similar to the 5% significance 
 level.
