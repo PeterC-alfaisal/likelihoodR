@@ -39,12 +39,12 @@ mysample <- c(0.7, -1.6, -0.2, -1.2, -0.1, 3.4, 3.7, 0.8, 0.0, 2.0)
 treat <- rep(1:0,each=5)
 L_2S_ttest(mysample, treat, veq=0, null=0, d=0.5, alt.2=2, L.int=2)
 ```
-    ## Maximum support = 4.352 for observed mean difference 2.46 against the null 0
-    ##  Support for d of 0.5 (0.9245269, blue line) versus null = 2.190776
-    ##  Support for d versus 2nd alt Hypothesis 2 (green line) = -1.924245
-    ##  Support for 2nd alt Hypothesis versus null = 4.11502
+    ## Maximum support for the observed mean 2.46 (dashed line) against the null 0 (black line) = 4.352
+    ##  Support for d of 0.5 (0.9245269, blue line) versus null = 2.191
+    ##  Support for d versus 2nd alt Hypothesis 2 (green line) = -1.924
+    ##  Support for 2nd alt Hypothesis versus null = 4.115
     ##
-    ##  S-2 likelihood interval: 0.99557  3.92443
+    ##  S-2 likelihood interval (red line) is from 0.99557 to 3.92443
 <figure>
 <img src="https://github.com/PeterC-alfaisal/likelihoodR/blob/master/Rplot01.jpeg" id="id" class="class" style="width:60.0%;height:60.0%" />
 </figure> Plot showing likelihood function around the observed mean difference (dashed line). Two additional coloured lines are shown for other possible hypotheses. The horizontal red line indicates the likelihood interval for a support value of 2 (closely equivalent to the 95% confidence interval).  
