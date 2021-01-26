@@ -18,6 +18,8 @@ support values are insensitive to transforms.
 
 Support values give the relative strength of evidence for one hypothesis 
 value versus another. They range from negative infinity to positive infinity. 
+There is no specific threshold value (unlike 0.05 in frequentist testing), and
+values can be rounded to the nearest 1 decimal place, e.g. -2.161 -> -2.2.
 A support of 0 shows no support for either hypothesis, while a support of 1 
 represents weak evidence for the first hypothesis versus the second. 
 A support of 2 represents moderate evidence, and is roughly equivalent to the 
