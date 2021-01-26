@@ -16,7 +16,7 @@ parameter value). Support values obtained from independent studies
 can simply be added together to give their combined support. Unlike *p* values, 
 support values are insensitive to transforms. 
 
-Support values give the relative strength of evidence for on hypothesis 
+Support values give the relative strength of evidence for one hypothesis 
 value versus another. They range from negative infinity to positive infinity. 
 A support of 0 shows no support for either hypothesis, while a support of 1 
 represents weak evidence for the first hypothesis versus the second. 
@@ -58,7 +58,7 @@ The functions in the package complement my recent book: [Cahusac, P.M.B.
 
 I would be interested in feedback <pcahusac@alfaisal.edu>          Peter Cahusac  
 
-Full details about each function, including arguments, outputs, and examples, can be obtained in R by typing
+Once installed, full details about each function, including arguments, outputs, and examples, can be obtained in R by typing
 ?function_name. For example, for the 2 independent samples *t* test function: 
 ``` r
 ?L_2S_ttest
