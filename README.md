@@ -84,7 +84,10 @@ L_2S_ttest(mysample, treat, veq=0, null=0, d=0.5, alt.2=2, L.int=2)
     ##  S-2 likelihood interval (red line) is from 0.99557 to 3.92443
 <figure>
 <img src="https://github.com/PeterC-alfaisal/likelihoodR/blob/master/Rplot.jpeg" id="id" class="class" style="width:60.0%;height:60.0%" />
-</figure> Plot showing likelihood function around the observed mean difference (dashed line). Two additional coloured lines are shown for other possible hypotheses. The horizontal red line indicates the likelihood interval for a support value of 2 (closely equivalent to the 95% confidence interval).  
+</figure> Plot showing likelihood function around the observed mean difference (vertical dashed line). The null value (0) is indicated
+by a vertical black line (just a small tick here, since the curve is so close to 0). Two additional coloured lines are shown for other 
+possible hypotheses. The horizontal red line indicates the likelihood interval for a support value of 2 
+(closely equivalent to the 95% confidence interval).  
 
 
 ### **All the available functions**
