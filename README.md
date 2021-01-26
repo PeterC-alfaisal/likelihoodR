@@ -26,11 +26,11 @@ strong evidence and 4 represents extremely strong evidence, and so on.
 Negative values represent the same strength of evidence, except for the 
 second hypothesis value versus the first.  
 
-The likelihood interval can be plotted for many analyses. This represents 
+The likelihood interval can be obtained for many statistics. This represents 
 the range of values that are consistent with the observed data for a given level
-of support, for example the S-2 likelihood interval includes all values which are 
+of support. For example, the S-2 likelihood interval includes all values which are 
 not more different from the maximum likelihood estimate (MLE) by more than a support
-value of 2. As noted for the figure below, the S-2 interval is closely equivalent 
+value of 2. As noted for the figure below, the S-2 interval is numerically closely equivalent 
 to the 95% confidence interval, as the support of 2 is similar to the 5% significance 
 level.
 An S-3 likelihood interval would include all values which are not more different 
