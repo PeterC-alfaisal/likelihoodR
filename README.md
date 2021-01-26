@@ -66,7 +66,7 @@ The functions in the package complement my recent book: [Cahusac, P.M.B.
 I would be interested in feedback <pcahusac@alfaisal.edu>          Peter Cahusac  
 
 Once installed, full details about each function, including arguments, outputs, and examples, can be obtained in R by typing
-?function_name. For example, for the 2 independent samples *t* test function: 
+**?function_name**. For example, for the 2 independent samples *t* test function: 
 ``` r
 ?L_2S_ttest
 ```
