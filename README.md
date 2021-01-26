@@ -9,15 +9,39 @@ important contributions.
 The likelihood approach focusses on the observed data, using maximum
 likelihood for estimates, and calculates likelihood ratios for specific
 parameter values given the collected data. The log of a likelihood ratio
-is known as the *support*. This statistic has distinct advantages. It represents the weight of evidence with a scale that ranges
-from positive to negative (indicating support for or against a hypothetical parameter value). Support values obtained from independent studies
-can simply be added together to give their combined support. Unlike *p* values, support values are insensitive to transforms. 
+is known as the *support*. This statistic has distinct advantages. It 
+represents the weight of evidence with a scale that ranges
+from positive to negative (indicating support for or against a hypothetical 
+parameter value). Support values obtained from independent studies
+can simply be added together to give their combined support. Unlike *p* values, 
+support values are insensitive to transforms. 
 
-Support values give the relative strength of evidence for on hypothesis value versus another. They range from negative infinity to positive infinity. 
-A support of 0 shows no support for either hypothesis, while a support of 1 represents weak evidence for the first hypothesis versus the second. 
-A support of 2 represents moderate evidence, and is roughly equivalent to the 5% significance level in the frequentist approach. A support of 3 represents
-strong evidence and 4 represents extremely strong evidence. Negative values represent the same strength of evidence, except for the second hypothesis value 
-versus the first.  
+Support values give the relative strength of evidence for on hypothesis 
+value versus another. They range from negative infinity to positive infinity. 
+A support of 0 shows no support for either hypothesis, while a support of 1 
+represents weak evidence for the first hypothesis versus the second. 
+A support of 2 represents moderate evidence, and is roughly equivalent to the 
+5% significance level in the frequentist approach. A support of 3 represents
+strong evidence and 4 represents extremely strong evidence, and so on. 
+Negative values represent the same strength of evidence, except for the 
+second hypothesis value versus the first.  
+
+The likelihood interval can be plotted for many analyses. This represents 
+the range of values that are consistent with the observed data for a given level
+of support, for example the S-2 likelihood interval includes all values which are 
+not more different from the maximum likelihood estimate (MLE) by more than a support
+value of 2. As noted for the figure below, the S-2 interval is closely equivalent 
+to the 95% confidence interval, as the support of 2 is similar to the 5% significance 
+level.
+An S-3 likelihood interval would include all values which are not more different 
+from the MLE by more than a support value of 3, and so on. The stronger 
+the interval the wider it will be. The interpretation of the likelihood interval 
+is distinct from a confidence interval.
+The confidence interval represents the long run probability of capturing the
+population parameter and may need to be corrected for multiple testing, stopping
+rule, etc. The likelihood interval is also distinct from the Bayesian credibility
+interval that represents the subjective probability for a population value occurring
+within it.
 
 There are few statistical packages that implement the likelihood
 approach and which calculate support. I have created an R package called
