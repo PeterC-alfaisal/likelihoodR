@@ -10,7 +10,7 @@ The likelihood approach focusses on the observed data, using maximum
 likelihood for estimates, and calculates likelihood ratios for specific
 parameter values given the collected data. The log of the likelihood
 is known as the *support*. When comparing two parameter values (as might be suggested by different hypotheses), the difference
-in log likelihoods represents the ratio of likelihoods. Using support has distinct advantages. It 
+in log likelihoods represents the ratio of their likelihoods. Using support has distinct advantages. It 
 represents the weight of evidence with a scale that ranges
 from positive to negative (indicating support for or against a hypothetical 
 parameter value). Support values obtained from independent studies
