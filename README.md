@@ -136,7 +136,4 @@ L_RR(table, null=1, exp.RR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001)
 
 # Efficacy
 L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001)
-
-# Likelihood-based confidence interval for the binomial
-binpL(a, n, alpha, toler)
 ```
