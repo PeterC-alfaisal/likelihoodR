@@ -85,6 +85,8 @@ L_2S_ttest(mysample, treat, veq=0, null=0, d=0.5, alt.2=2, L.int=2)
     ##  Support for 2nd alt Hypothesis versus null = 4.115
     ##
     ##  S-2 likelihood interval (red line) is from 0.99557 to 3.92443
+    ##
+    ## t(6.4) = 2.975, p = 0.02305882
 <figure>
 <img src="https://github.com/PeterC-alfaisal/likelihoodR/blob/master/Rplot.jpeg" id="id" class="class" style="width:60.0%;height:60.0%" />
 </figure> Plot showing likelihood function around the observed mean difference (vertical dashed line). The null value (0) is indicated
