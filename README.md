@@ -77,16 +77,16 @@ Once installed, full details about each function, including arguments, outputs, 
 ``` r
 mysample <- c(0.7, -1.6, -0.2, -1.2, -0.1, 3.4, 3.7, 0.8, 0.0, 2.0)
 treat <- rep(1:0,each=5)
-L_2S_ttest(mysample, treat, veq=0, null=0, d=0.5, alt.2=2, L.int=2)
+L_2S_ttest(mysample, treat, veq=0, null=0, d=0.5, alt.2=2, L.int=2, verb = TRUE)
 ```
     ## Maximum support for the observed mean 2.46 (dashed line) against the null 0 (black line) = 4.352
-    ##  Support for d of 0.5 (0.9245269, blue line) versus null = 2.191
+    ##  Support for d of 0.5 (0.925, blue line) versus null = 2.191
     ##  Support for d versus 2nd alt Hypothesis 2 (green line) = -1.924
     ##  Support for 2nd alt Hypothesis versus null = 4.115
     ##
     ##  S-2 likelihood interval (red line) is from 0.99557 to 3.92443
     ##
-    ## t(6.4) = 2.975, p = 0.02305882
+    ## t(6.4) = 2.975, p = 0.02305882, d = 1.33
 <figure>
 <img src="https://github.com/PeterC-alfaisal/likelihoodR/blob/master/Rplot.jpeg" id="id" class="class" style="width:60.0%;height:60.0%" />
 </figure> Plot showing likelihood function around the observed mean difference (vertical dashed line). The null value (0) is indicated
@@ -98,44 +98,44 @@ possible hypotheses. The horizontal red line indicates the likelihood interval f
 ### **All the available functions**
 ``` r
 # One sample and related samples t test
-L_ttest(data1, data2, null=0, d=0.5, alt.2=NULL, L.int=2) 
+L_ttest(data1, data2, null=0, d=0.5, alt.2=NULL, L.int=2, verb=TRUE)
 
 # Independent samples t test
-L_2S_ttest(data, group, veq=0, null=0, d=0.5, alt.2=NULL, L.int=2)
+L_2S_ttest(data, group, veq=0, null=0, d=0.5, alt.2=NULL, L.int=2, verb=TRUE)
 
 # Sample size calculation using the evidential approach for t tests
-L_t_test_sample_size(MW = 0.05, sd = 1, d = 1.2, S = 3, paired = FALSE)
+L_t_test_sample_size(MW = 0.05, sd = 1, d = 1.2, S = 3, paired = FALSE, verb=TRUE)
 
 # One-way independent samples ANOVA
-L_1way_ANOVA(data, group, cont1=NULL, cont2=NULL)
+L_1way_ANOVA(data, group, contrast1=NULL, contrast2=NULL, verb=TRUE)
 
 # Two-way independent samples factorial ANOVA
-L_2way_Factorial_ANOVA(data, factor1, factor2, contrast1=NULL, contrast2=NULL)
+L_2way_Factorial_ANOVA(data, factor1, factor2, contrast1=NULL, contrast2=NULL, verb=TRUE)
 
 # One-way repeated measures ANOVA
-L_1way_RM_ANOVA(dat, group, ID)
+L_1way_RM_ANOVA(dat, group, ID, contrast1=NULL, contrast2=NULL, verb=TRUE)
 
 # Correlation
-L_corr(xv, yv, null=0, exp.r=NULL, L.int=2, alpha=.05)
+L_corr(xv, yv, null=0, exp.r=NULL, L.int=2, alpha=.05, verb=TRUE)
 
 # Regression, comparing linear, quadratic and cubic fits
-L_regress(y, x)
+L_regress(y, x, verb=TRUE)
 
 # Multiple logistic regression
-L_logistic_regress(yv, p1, p2=NULL, p3=NULL, p4=NULL, p5=NULL, p6=NULL)
+L_logistic_regress(yv, p1, p2=NULL, p3=NULL, p4=NULL, p5=NULL, p6=NULL, verb=TRUE)
 
 # One-way categorical data, goodness of fit
-L_1way_cat(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001)
+L_1way_cat(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE)
 
 # Two-way categorical data, tests for interaction and main effects
-L_2way_cat(table)
+L_2way_cat(table, verb=TRUE)
 
 # Odds Ratio
-L_OR(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001)
+L_OR(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, verb=TRUE)
 
 # Relative Risk
-L_RR(table, null=1, exp.RR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001)
+L_RR(table, null=1, exp.RR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, verb=TRUE)
 
 # Efficacy
-L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001)
+L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE)
 ```
