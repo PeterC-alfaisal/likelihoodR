@@ -1,0 +1,25 @@
+Package: likelihoodR
+Title: Likelihood Analyses for Common Statistical Tests
+Version: 1.0.3
+Authors@R: 
+    person(given = "Peter",
+           family = "Cahusac",
+           role = c("aut", "cre"),
+           email = "peteqsac@gmail.com",
+           comment = c(ORCID = "https://orcid.org/0000-0003-4976-2834"))
+Description: A collection of functions that calculate the log likelihood 
+    (support) for a range of statistical tests. Where possible the likelihood 
+    function and likelihood interval for the observed data are displayed. The 
+    evidential approach used here is based on the book "Likelihood" by A.W.F. 
+    Edwards (1992, ISBN-13 : 978-0801844430), "Statistical Evidence" by R. 
+    Royall (1997, ISBN-13 : 978-0412044113), S.N. Goodman & R. Royall 
+    (2011) <doi:10.2105/AJPH.78.12.1568>, "Understanding 
+    Psychology as a Science" by Z. Dienes (2008, ISBN-13 : 978-0230542310), 
+    S. Glover & P. Dixon <https://link.springer.com/article/10.3758/BF03196706> 
+    and others. This package accompanies "Evidence-Based Statistics" by 
+    P. Cahusac (2020, ISBN-13 : 978-1119549802).
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
