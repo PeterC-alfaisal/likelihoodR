@@ -5,7 +5,7 @@
 #' and null (which is assumed to be 1, but can also be specified) values. A likelihood function
 #' is plotted for the obtained OR with a specified likelihood interval, and expected OR,
 #' if specified.
-#' Chi-squared statistics are also provided and a likelihood-based % confidence interval.
+#' Chi-squared and likelihood ratio test (G) statistics are also provided and a likelihood-based % confidence interval.
 #' It uses the optimize function to locate desired limits for both intervals and other
 #' support calculations.
 #'
@@ -45,6 +45,10 @@
 #'
 #' $p.value - p value.
 #'
+#' $LR.test = the likelihood ratio test statistic.
+#'
+#' $lrt.p = the p value for the likelihood ratio test statistic
+#'
 #' $residuals - the Pearson residuals.
 #'
 #' $alpha - specified significance level.
@@ -58,6 +62,7 @@
 #' @export
 #'
 #' @importFrom graphics segments
+#' @importFrom graphics plot
 #' @importFrom graphics lines
 #' @importFrom stats optimize
 #' @importFrom stats chisq.test
@@ -101,29 +106,33 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
   (orv <- (a*d)/(b*c)) # actual odds ratio from the contingency table
 
   res <- 100            # resolution, increase for greater resolution
-  arrlen <- res*c1tot-1
+  mintot <- min(r1tot,r2tot,c1tot,c2tot)
+  arrlen <- res*mintot-1
   xs <- 0; ys <- 0
-
-  for (i in 1:arrlen) {     # arrays to plot likelihood
+  for (i in 1:arrlen) {     # arrays to plot likelihood vs OR
     dv <- i/res
-    ys[i] <- exp(-sum(a*log(a/dv), b*log(b/(c1tot-dv)), c*log(c/(r1tot-dv)), d*log(d/(r2tot-c1tot+dv))))
+    ys[i] <- exp(-sum(a*log(a/dv), b*log(b/(c1tot-dv)),
+             c*log(c/(r1tot-dv)), d*log(d/(r2tot-c1tot+dv))))
     xs[i] <- dv*(r2tot-c1tot+dv)/((c1tot-dv)*(r1tot-dv))
   }
 
 # likelihood-based % confidence interval
   goal = -qchisq(1-alpha,1)/2
   f <- function(x,a,b,c,d,c1tot,r1tot,r2tot,goal) {
-    (-sum(a*log(a/x), b*log(b/(c1tot-x)), c*log(c/(r1tot-x)), d*log(d/(r2tot-c1tot+x)))-goal)^2
+    (-sum(a*log(a/x), b*log(b/(c1tot-x)), c*log(c/(r1tot-x)),
+          d*log(d/(r2tot-c1tot+x)))-goal)^2
     }
-  xmin1 <- optimize(f, c(1, a), tol = toler, a, b, c, d, c1tot, r1tot, r2tot, goal)
-  xmin2 <- optimize(f, c(a, c1tot), tol = toler, a, b, c, d, c1tot, r1tot, r2tot, goal)
+  xmin1 <- optimize(f, c(1, a), tol = toler, a, b, c, d, c1tot, r1tot,
+                    r2tot, goal)
+  xmin2 <- optimize(f, c(a, mintot), tol = toler, a, b, c, d, c1tot, r1tot,
+                                        r2tot, goal)
   beg <- xmin1$minimum*(r2tot-c1tot+xmin1$minimum)/((c1tot-xmin1$minimum)*(r1tot-xmin1$minimum))
   end <- xmin2$minimum*(r2tot-c1tot+xmin2$minimum)/((c1tot-xmin2$minimum)*(r1tot-xmin2$minimum))
 
 # same for likelihood
   goalL <- -L.int
   xmin1L <- optimize(f, c(1, a), tol = toler, a, b, c, d, c1tot, r1tot, r2tot, goalL)
-  xmin2L <- optimize(f, c(a, c1tot), tol = toler, a, b, c, d, c1tot, r1tot, r2tot, goalL)
+  xmin2L <- optimize(f, c(a, mintot), tol = toler, a, b, c, d, c1tot, r1tot, r2tot, goalL)
   begL <- xmin1L$minimum*(r2tot-c1tot+xmin1L$minimum)/((c1tot-xmin1L$minimum)*(r1tot-xmin1L$minimum))
   endL <- xmin2L$minimum*(r2tot-c1tot+xmin2L$minimum)/((c1tot-xmin2L$minimum)*(r1tot-xmin2L$minimum))
 
@@ -139,7 +148,7 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
   g <- function(x,c1tot,r1tot,r2tot,goal) {
     ((x*(r2tot-c1tot+x)/((c1tot-x)*(r1tot-x)))-goal)^2
     }
-  exa <- optimize(g, c(1, c1tot), tol = toler, c1tot, r1tot, r2tot, goal)
+  exa <- optimize(g, c(1, mintot), tol = toler, c1tot, r1tot, r2tot, goal)
   xa <- unname(unlist(exa[1]))
   xah <- exp(-sum(a*log(a/xa), b*log(b/(c1tot-xa)), c*log(c/(r1tot-xa)), d*log(d/(r2tot-c1tot+xa))))
   }
@@ -150,11 +159,19 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
   h <- function(x,c1tot,r1tot,r2tot,goal) {
     ((x*(r2tot-c1tot+x)/((c1tot-x)*(r1tot-x)))-goal)^2
   }
-  exan <- optimize(h, c(1, c1tot), tol = toler, c1tot, r1tot, r2tot, goal)
-  xa <- unname(unlist(exan[1]))
-  nullh <- exp(-sum(a*log(a/xa), b*log(b/(c1tot-xa)), c*log(c/(r1tot-xa)), d*log(d/(r2tot-c1tot+xa))))
+#  exan <- optimize(h, c(1, c1tot), tol = toler, c1tot, r1tot, r2tot, goal) # if else added Oct 2021 to deal with NaNs
+    if (r1tot < c1tot) {
+  exan <- optimize(h, c(1, r1tot), tol = toler, c1tot, r1tot, r2tot, goal)
+  } else {
+    exan <- optimize(h, c(1, c1tot), tol = toler, c1tot, r1tot, r2tot, goal)
+  }
+    xa <- unname(unlist(exan[1]))
+  nullh <- exp(-sum(a*log(a/xa), b*log(b/(c1tot-xa)), c*log(c/(r1tot-xa)),
+                    d*log(d/(r2tot-c1tot+xa))))
 
   S2way <- log(1) - log(nullh) # check that this should be the same as S for observed OR
+  lrt <- 2*S2way  # likelihood ratio statistic
+  LRt_p <- 1-pchisq(lrt,1)
 
 # do the plot with lines
   plot(xs,ys,xlim=c(lolim,hilim),type="l", lwd = 1, xlab = "Odds Ratio", ylab = "Likelihood")
@@ -181,7 +198,9 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
       if (!is.null(exp.OR)) round(SexOR_null,3),
       sep= "", "\n   S-", L.int," likelihood interval (red line) is from ",
       c(round(begL,5), " to ", round(endL,5)),
-      "\n\nChi-square(1) = ", round(lt$statistic,3), ",  p = ", round(lt$p.value,4), ", N = ", grandtot,
+      "\n\nChi-square(1) = ", round(lt$statistic,3), ",  p = ", round(lt$p.value,4),
+      "\n Likelihood ratio test G(1) = ", round(lrt,3),
+      ", p = ", round(LRt_p,5),", N = ", grandtot,
       "\n   Likelihood-based ", 100*(1-alpha), "% confidence interval from ",
       c(round(beg,5), " to ", round(end,5)), "\n ")
 
@@ -190,8 +209,10 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
                S.exp.ORvsNull = SexOR_null, L.int = c(begL, endL), S_int = L.int,
                observed = lt$observed, expected = lt$expected,
                chi.sq = lt$statistic, corrected = cc, p.value = lt$p.value,
+               LR.test = lrt, lrt.p = LRt_p,
                residuals = lt$residuals, alpha = alpha, conf.int = c(beg, end),
                all.err.acc = c(xmin1$objective, xmin2$objective,
                                xmin1L$objective, xmin2L$objective,
                                exa$objective, exan$objective)))
 }
+

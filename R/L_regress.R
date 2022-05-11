@@ -3,7 +3,7 @@
 #' This function calculates the supports for different regression fits from 2 vectors of data.
 #' Models include linear, quadratic and cubic (given sufficient data). A plot is
 #' included showing linear (black), quadratic (red) and cubic (blue dashed) lines. P values for
-#' tehe model fits are also given.
+#' the model fits are also given.
 #'
 #' @usage L_regress(y, x, verb=TRUE)
 #' @param x a numeric vector.
@@ -31,6 +31,7 @@
 #'
 #' @importFrom stats anova
 #' @importFrom stats lm
+#' @importFrom graphics plot
 #' @importFrom graphics lines
 #'
 #' @examples # for women's world record times for 1500m event example, p 108

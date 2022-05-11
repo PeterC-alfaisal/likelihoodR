@@ -1,7 +1,8 @@
 #' Likelihood Support for One-way Categorical Data
 #'
 #' This function calculates the support for one-way categorical data (multinomial), also
-#' gives chi-squared statistics. If there are only 2 categories then binomial information
+#' gives chi-squared and likelihood ratio test (G) statistics. If there are only 2
+#' categories then binomial information
 #' is given too with likelihood interval, including the likelihood-based % confidence
 #' interval. Support for the variance being more different than expected (Edwards p 187,
 #' Cahusac p 158) is also calculated.
@@ -32,6 +33,10 @@
 #' $chi.sq - chi-squared value.
 #'
 #' $p.value - p value for chi-squared.
+#'
+#' $LR.test = the likelihood ratio test statistic.
+#'
+#' $lrt.p = the p value for the likelihood ratio test statistic
 #'
 #' Additional outputs for binomial:
 #'
@@ -103,12 +108,16 @@ L_1way_cat <- function(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=
   suppressWarnings(mc <- chisq.test(obs,p=exp.p,rescale.p = TRUE)) # suppress warnings
   p.value <- mc$p.value
   chi.s  <- unname(mc$statistic)
+  lrt <- 2*Sup  # likelihood ratio statistic
+  LRt_p <- 1-pchisq(lrt,df)
   toogood <- df/2*(log(df/chi.s)) - (df - chi.s)/2
   if (len!=2) {
     if(verb) cat("\nSupport for difference from expected, corrected for ", df, " df = ",  round(Supc,3), sep= "",
       "\n Support for variance differing more than expected = ",
       round(toogood,3), "\n\n Chi-square(", df, ") = ", chi.s,
-      ",  p = ", round(p.value,5), ", N = ", n, "\n ")
+      ",  p = ", round(p.value,5),
+      "\n Likelihood ratio test G(", df, ") = ", round(lrt,3),
+    ", p = ", round(LRt_p,5), ", N = ", n, "\n ")
   return(invisible(list(S.val = Supc, uncorrected.sup = Sup, df = df,
               observed = obs, exp.p = exp.p, too.good = toogood,
               chi.sq = chi.s, p.value = p.value)))
@@ -125,11 +134,13 @@ L_1way_cat <- function(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=
   goal <- -L.int
   xmin1L <- optimize(f, c(0, p), tol = toler, a, r, p, goal)
   xmin2L <- optimize(f, c(p, 1), tol = toler, a, r, p, goal)
-  if (p < .5) { lolim <- 0; hilim <- p + 6*sqrt(p*(1-p)/n)}
-  else {hilim <- 1; lolim <- p - 6*sqrt(p*(1-p)/n)}
+
+  if (p < .5) { lolim <- p - 4*sqrt(p*(1-p)/n); hilim <- p + 4*sqrt(p*(1-p)/n)
+  } else {hilim <- p + 4*sqrt(p*(1-p)/n); lolim <- p - 4*sqrt(p*(1-p)/n)}
   if (lolim < 0) {lolim <- 0}
   if (hilim > 1) {hilim <- 1}
-  curve((x^a*(1-x)^r)/(p^a*(1-p)^r), xlim = c(lolim,hilim), xlab = "Probability", ylab = "Likelihood")
+
+  curve((x^a*(1-x)^r)/(p^a*(1-p)^r), from = 0, to = 1, xlim = c(lolim,hilim), xlab = "Probability", ylab = "Likelihood")
   lines(c(p,p),c(0,1),lty=2) # add MLE as dashed line
   lines(c(exp.p[1],exp.p[1]),c(0,(exp.p[1]^a*(1-exp.p[1])^r)/(p^a*(1-p)^r)),
                                 lty=1, col = "blue") # add H prob as blue line
@@ -139,14 +150,16 @@ L_1way_cat <- function(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=
       "\n Support for variance differing more than expected = ", round(toogood,3),
       "\n\n S-", L.int," likelihood interval (red line) from ",
       c(round(xmin1L$minimum,5), " to ", round(xmin2L$minimum,5)),
-      "\n\nChi-square(", df, ") = ", round(chi.s,3), ",  p = ", p.value,  ", N = ", n,
+      "\n\nChi-square(", df, ") = ", round(chi.s,3), ",  p = ", p.value,
+      "\n Likelihood ratio test G(", df, ") = ", round(lrt,3),
+      ", p = ", round(LRt_p,5),", N = ", n,
       "\n Likelihood-based ", 100*(1-alpha), "% confidence interval from ",
       c(round(xmin1$minimum,5), " to ", round(xmin2$minimum,5)), "\n ")
   invisible(list(S.val = Sup, uncorrected.sup = Sup, df = df, prob.val = p,
                  succ.fail = c(a,r), exp.p = exp.p,
                  like.int = c(xmin1L$minimum, xmin2L$minimum), like.int.spec = L.int,
                  too.good = toogood,
-                 chi.sq = chi.s, p.value = p.value,
+                 chi.sq = chi.s, p.value = p.value, LR.test = lrt, lrt.p = LRt_p,
                  conf.int = c(xmin1$minimum, xmin2$minimum), alpha.spec = alpha,
                  err.acc = c(xmin1$objective, xmin2$objective)))
 }

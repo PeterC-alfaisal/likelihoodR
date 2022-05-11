@@ -10,8 +10,8 @@
 #' Corrected support is given where appropriate, using
 #' Akaike's correction (Hurvich & Tsai (1989)). No correction is necessary for the
 #' two contrasts support since they both involve 1 parameter. Unequal group sizes are
-#' accommodated. F, p and partial eta-squared values are given for the two
-#' factors and their interaction.
+#' accommodated, using type III sums of squares. F, p and partial eta-squared values
+#' are given for the two factors and their interaction.
 #'
 #' @usage L_2way_Factorial_ANOVA(data, factor1, factor2, contrast1=NULL, contrast2=NULL, verb=TRUE)
 #'
@@ -118,19 +118,21 @@ L_2way_Factorial_ANOVA <- function(data, factor1, factor2, contrast1=NULL, contr
   F1 <- factor1
   F2 <- factor2
 
-  m1=anova(lm(dat~F1*F2))
+  options(contrasts = c("contr.sum","contr.poly")) # for type III SS
+  model <- lm(dat~F1*F2)
+  m1 <- drop1(model, .~., test="F")
 
-  tss <- sum(m1$`Sum Sq`)
-  eta_sq_1 <- m1$`Sum Sq`[1]/(m1$`Sum Sq`[1] + m1$`Sum Sq`[4]) # partial eta-squared
-  eta_sq_2 <- m1$`Sum Sq`[2]/(m1$`Sum Sq`[2] + m1$`Sum Sq`[4])
-  eta_sq_12 <- m1$`Sum Sq`[3]/(m1$`Sum Sq`[3] + m1$`Sum Sq`[4])
-  N <- (sum(m1$Df)+1)
-  ka <- m1$Df[1]+1
-  kb <- m1$Df[2]+1
+  tss <- sum(m1$`Sum of Sq`[2:4],m1$RSS[1])
+  eta_sq_1 <- m1$`Sum of Sq`[2]/(m1$`Sum of Sq`[2] + m1$RSS[1]) # partial eta-squared
+  eta_sq_2 <- m1$`Sum of Sq`[3]/(m1$`Sum of Sq`[3] + m1$RSS[1])
+  eta_sq_12 <- m1$`Sum of Sq`[4]/(m1$`Sum of Sq`[4] + m1$RSS[1])
+  N <- length(dat)
+  ka <- m1$Df[2]+1
+  kb <- m1$Df[3]+1
 
-  S_12 <- -0.5 * N * (log(m1$`Sum Sq`[4]) - log(tss))
+  S_12 <- -0.5 * N * (log(m1$RSS[1]) - log(tss))
   k2 <- 2       # parameters for variance and grand mean
-  k1 <- sum(m1$Df[1:3]) + k2
+  k1 <- sum(m1$Df[2:4]) + k2
 
   # Akaike's correction
   Ac <- function(k1,k2,N) { k2 * N/(N - k2 - 1) - k1 * (N/(N - k1 - 1)) }
@@ -138,8 +140,8 @@ L_2way_Factorial_ANOVA <- function(data, factor1, factor2, contrast1=NULL, contr
   S_12c <- S_12 + Ac(k1,k2,N)
 
   # full model versus main effects only
-  S_FM <- -0.5 * N * (log(m1$`Sum Sq`[4]) - log(sum(m1$`Sum Sq`[3:4])))
-  k2 <- 2 + sum(m1$Df[1:2])
+  S_FM <- -0.5 * N * (log(m1$RSS[1]) - log(sum(m1$`Sum of Sq`[4],m1$RSS[1])))
+  k2 <- 2 + sum(m1$Df[2:3])
   S_FMc <- S_FM + Ac(k1,k2,N)
 
   datf <- data.frame(dat, F1, F2)
@@ -158,9 +160,9 @@ L_2way_Factorial_ANOVA <- function(data, factor1, factor2, contrast1=NULL, contr
     SS_cont1 <- sum(contrast1*means)^2/(sum(contrast1^2/(numbers)))
     SS_c1_unex <- tss - SS_cont1
 
-    S_c1M <- -0.5 * N * (log(SS_c1_unex) - log(sum(m1$`Sum Sq`[3:4])))
+    S_c1M <- -0.5 * N * (log(SS_c1_unex) - log(sum(m1$`Sum of Sq`[4],m1$RSS[1])))
     k1 <- 2 + 1    #2 parameters (variance and grand mean) + one for contrast
-    k2 <- 2 + sum(m1$Df[1:2])
+    k2 <- 2 + sum(m1$Df[2:3])
     S_c1Mc <- S_c1M + Ac(k1,k2,N)
 
     if (!is.null(contrast2)) {
@@ -173,28 +175,30 @@ L_2way_Factorial_ANOVA <- function(data, factor1, factor2, contrast1=NULL, contr
 
   interaction.plot(F1, F2, dat, ylab="Means")
 
-  Fval <- m1$`F value`
-  Pval <- m1$`Pr(>F)`
-  dfv <- m1$Df
+  Fval <- m1$`F value`[2:4]
+  Pval <- m1$`Pr(>F)`[2:4]
+  dfv <- m1$Df[2:4]
+  dfres <- (N-sum(dfv)-1)
 
-  Fval_c1 <- unname(SS_cont1/m1$`Mean Sq`[4])
-  Pval_c1 <- pf(Fval_c1, 1, m1$Df[4], lower.tail = FALSE)
+  res_msq <- m1$RSS[1]/dfres
+  Fval_c1 <- unname(SS_cont1/res_msq)
+  Pval_c1 <- pf(Fval_c1, 1, dfres, lower.tail = FALSE)
 
   if(verb) cat("\nSupport for full model (including interaction) versus null = ", round(S_12c,3), sep= "",
       "\n Support for full model versus main effects = ", round(S_FMc,3),
       "\n Support for contrast 1 versus main effects = ", if (!is.null(contrast1)) round(S_c1Mc,3),
       "\n Support for contrast 1 versus contrast 2 = ", if (!is.null(contrast2)) round(S_c1c2,3),
-      "\n\nFirst factor main effect F(", dfv[1],",", dfv[4],") = ", round(Fval[1],3),
+      "\n\nFirst factor main effect F(", dfv[1],",", dfres,") = ", round(Fval[1],3),
       ", p = ", Pval[1], ", partial eta-squared = ", round(eta_sq_1,3),
-      "\n Second factor main effect F(", dfv[2],",", dfv[4],") = ", round(Fval[2],3),
+      "\n Second factor main effect F(", dfv[2],",", dfres,") = ", round(Fval[2],3),
       ", p = ", Pval[2], ", partial eta-squared = ", round(eta_sq_2,3),
-      "\n Interaction F(", dfv[3],",", dfv[4],") = ", round(Fval[3],3),
+      "\n Interaction F(", dfv[3],",", dfres,") = ", round(Fval[3],3),
       ", p = ", Pval[3],  ", partial eta-squared = ", round(eta_sq_12,3),
-      "\n Contrast 1 F(1,",dfv[4],") = ", if (!is.null(contrast1)) round(Fval_c1,3),
+      "\n Contrast 1 F(1,",dfres,") = ", if (!is.null(contrast1)) round(Fval_c1,3),
       ", p = ", Pval_c1, "\n ")
 
   invisible(list(S.12c = S_12c, S.12 = S_12, S.FMc = S_FMc, S.FM = S_FM,
-                 S.c1.Mc = S_c1Mc, S.c1.M = S_c1M, S.c1.c2 = S_c1c2, Means = mean_out, df = m1$Df,
+                 S.c1.Mc = S_c1Mc, S.c1.M = S_c1M, S.c1.c2 = S_c1c2, Means = mean_out, df = c(m1$Df[2:4],dfres),
                  F.f1 = Fval[1], Pval.f1 = Pval[1], eta.sq.1 = eta_sq_1, F.f2 = Fval[2],
                  Pval.f2 = Pval[2], eta.sq.2 = eta_sq_2,
                  F.int = Fval[3], Pval.int = Pval[3], eta.sq.12 = eta_sq_12,

@@ -48,6 +48,10 @@ $corrected - whether chi-squared was corrected, default = FALSE.
 
 $p.value - p value.
 
+$LR.test = the likelihood ratio test statistic.
+
+$lrt.p = the p value for the likelihood ratio test statistic
+
 $residuals - the Pearson residuals.
 
 $alpha - specified significance level.
@@ -62,7 +66,7 @@ An expected OR can be specified and the support calculated for this relative to 
 and null (which is assumed to be 1, but can also be specified) values. A likelihood function
 is plotted for the obtained OR with a specified likelihood interval, and expected OR,
 if specified.
-Chi-squared statistics are also provided and a likelihood-based \% confidence interval.
+Chi-squared and likelihood ratio test (G) statistics are also provided and a likelihood-based \% confidence interval.
 It uses the optimize function to locate desired limits for both intervals and other
 support calculations.
 }

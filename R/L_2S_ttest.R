@@ -90,10 +90,11 @@ L_2S_ttest <- function(data, group, veq=0, null=0, d=0.5, alt.2=NULL, L.int=2, v
   ad <- dat[complete.cases(dat), ] # remove missing, NA or NaN, case-wise
   dat <- ad$data
   gp <- ad$group
-  ns <- length(sort(dat[gp==1])) #sort to remove NA
-  nc <- length(sort(dat[gp==0]))
-  sd1 <- sd(dat[gp==1],na.rm=TRUE)
-  sd2 <- sd(dat[gp==0],na.rm=TRUE)
+  lev <- levels(factor(gp))
+  ns <- length(sort(dat[gp==lev[1]])) #sort to remove NA
+  nc <- length(sort(dat[gp==lev[2]]))
+  sd1 <- sd(dat[gp==lev[1]],na.rm=TRUE)
+  sd2 <- sd(dat[gp==lev[2]],na.rm=TRUE)
   SD <- sqrt(sd1^2+sd2^2)
   tres0 <- t.test(dat~gp, mu = null, paired=FALSE,var.equal=veq) #
   m.obs <- unname(tres0$estimate[1]-tres0$estimate[2]) # t test does it this way

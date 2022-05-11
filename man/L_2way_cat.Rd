@@ -42,9 +42,13 @@ $expected - the expected values for null hypothesis of no interaction.
 
 $residuals - the Pearson residuals.
 
-$chi.sq = the chi-squared statistic.
+$LR.test = the likelihood ratio test statistic.
 
-$p.value - the p value associated with the chi-squared statistic.
+$lrt.p - the p value for likelihood ratio test.
+
+$chi.sq - chi-squared value.
+
+$p.value - p value for chi-squared.
 
 $trend.p - p value for trend (from chi-squared dist.).
 }
@@ -55,7 +59,7 @@ being closer or worse (different variance) than expected (Edwards p 187, Cahusac
 is calculated. The support
 for trend across the columns is given (assuming the levels for columns are ordered),
 and conventional p value for trend.
-Finally, the usual chi-squared statistic and p value are given.
+Finally, Chi-squared and likelihood ratio test (G) statistics are given.
 }
 \examples{
 # S. mansoni eggs in stools example, p 151

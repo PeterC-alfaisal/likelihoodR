@@ -71,8 +71,8 @@ contrast is specified then the first contrast is compared to it.
 Corrected support is given where appropriate, using
 Akaike's correction (Hurvich & Tsai (1989)). No correction is necessary for the
 two contrasts support since they both involve 1 parameter. Unequal group sizes are
-accommodated. F, p and partial eta-squared values are given for the two
-factors and their interaction.
+accommodated, using type III sums of squares. F, p and partial eta-squared values
+are given for the two factors and their interaction.
 }
 \examples{
 # blood clotting times example, p 91

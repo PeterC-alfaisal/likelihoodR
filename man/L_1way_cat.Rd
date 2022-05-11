@@ -36,6 +36,10 @@ $chi.sq - chi-squared value.
 
 $p.value - p value for chi-squared.
 
+$LR.test = the likelihood ratio test statistic.
+
+$lrt.p = the p value for the likelihood ratio test statistic
+
 Additional outputs for binomial:
 
 $prob.val - MLE probability from data.
@@ -54,7 +58,8 @@ $err.acc - error accuracy for optimize function.
 }
 \description{
 This function calculates the support for one-way categorical data (multinomial), also
-gives chi-squared statistics. If there are only 2 categories then binomial information
+gives chi-squared and likelihood ratio test (G) statistics. If there are only 2
+categories then binomial information
 is given too with likelihood interval, including the likelihood-based \% confidence
 interval. Support for the variance being more different than expected (Edwards p 187,
 Cahusac p 158) is also calculated.

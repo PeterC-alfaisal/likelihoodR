@@ -1,6 +1,6 @@
 Package: likelihoodR
 Title: Likelihood Analyses for Common Statistical Tests
-Version: 1.0.3
+Version: 1.0.7
 Authors@R: 
     person(given = "Peter",
            family = "Cahusac",
@@ -20,6 +20,6 @@ Description: A collection of functions that calculate the log likelihood
     P. Cahusac (2020, ISBN-13 : 978-1119549802).
 License: GPL-2
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

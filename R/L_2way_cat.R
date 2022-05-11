@@ -6,7 +6,7 @@
 #' is calculated. The support
 #' for trend across the columns is given (assuming the levels for columns are ordered),
 #' and conventional p value for trend.
-#' Finally, the usual chi-squared statistic and p value are given.
+#' Finally, Chi-squared and likelihood ratio test (G) statistics are given.
 #'
 #' @usage L_2way_cat(table, verb=TRUE)
 #'
@@ -44,9 +44,13 @@
 #'
 #' $residuals - the Pearson residuals.
 #'
-#' $chi.sq = the chi-squared statistic.
+#' $LR.test = the likelihood ratio test statistic.
 #'
-#' $p.value - the p value associated with the chi-squared statistic.
+#' $lrt.p - the p value for likelihood ratio test.
+#'
+#' $chi.sq - chi-squared value.
+#'
+#' $p.value - p value for chi-squared.
 #'
 #' $trend.p - p value for trend (from chi-squared dist.).
 #'
@@ -83,7 +87,7 @@ L_2way_cat <- function(table, verb=TRUE) {
 
 # calculating the interaction
   S2way <- 0
-  suppressWarnings(lt <- chisq.test(table)) # ignore warning message
+  suppressWarnings(lt <- chisq.test(table, correct=FALSE)) # ignore warning message
 # lt$observed * log(lt$observed/lt$expected) # individual S terms
   S2way <- sum( lt$observed * log(lt$observed/lt$expected) )
   df <- unname(lt$parameter)
@@ -108,6 +112,10 @@ L_2way_cat <- function(table, verb=TRUE) {
   chi.s <- unname(lt$statistic)
   toogood <- df/2*(log(df/chi.s)) - (df - chi.s)/2
 
+# likelihood ratio test
+  lrt <- 2*S2way
+  LRt_p <- 1-pchisq(lrt,df)
+
 # evidence for trend
   trX <- NULL
   tr <- NULL
@@ -125,9 +133,10 @@ L_2way_cat <- function(table, verb=TRUE) {
     round(ColMain_c,3), "\n Total support for whole table = ", round(Tot_S,3),
     "\n Support for trend across columns = ", if (length(col_sum)>=3) round(tr,3),
     "\n Support for variance differing more than expected = ", round(toogood,3),
-    "\n\n P value for trend from chi-squared = ", if (length(col_sum)>=3) trX$p.value,
-    "\n Chi-square(", df, ") = ", round(chi.s,3),
-    ",  p = ", round(lt$p.value,5), ", N = ", grandtot, "\n ")
+    "\n\n Chi-squared(", df, ") = ", round(chi.s,3), ",  p = ", round(lt$p.value,5),
+    "\n Likelihood ratio test G(", df, ") = ", round(lrt,3),
+    ", p = ", round(LRt_p,5), ", N = ", grandtot,
+    "\n\n Trend p value from chi-squared = ", if (length(col_sum)>=3) trX$p.value, "\n ")
 
   invisible(list(S.int = S2wayc, df = df, S.int.unc = S2way,
                S.Main.rows = RowMain_c, S.Main.cols = ColMain_c,
@@ -135,6 +144,6 @@ L_2way_cat <- function(table, verb=TRUE) {
                df.rows = length(row_sum)-1, df.cols = length(col_sum)-1,
                S.total = Tot_S, S.trend = tr, too.good = toogood,
                observed = lt$observed, expected = lt$expected,
-               residuals = lt$residuals,
-                      chi.sq = chi.s, p.value = lt$p.value, trend.p = trX$p.value))
+               residuals = lt$residuals, chi.sq = lt$statistic, p.value = lt$p.value,
+               LR.test = lrt, lrt.p = LRt_p, trend.p = trX$p.value))
 }

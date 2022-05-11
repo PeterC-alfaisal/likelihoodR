@@ -57,6 +57,7 @@
 #' @export
 #'
 #' @importFrom stats anova
+#' @importFrom graphics plot
 #' @importFrom stats lm
 #' @importFrom stats contr.poly
 #' @importFrom stats aggregate
