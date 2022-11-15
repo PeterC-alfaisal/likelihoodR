@@ -57,6 +57,7 @@
 #'
 #' @importFrom stats complete.cases
 #' @importFrom stats t.test
+#' @importFrom stats na.omit
 #' @importFrom graphics curve
 #' @importFrom graphics lines
 #' @importFrom graphics segments
@@ -84,8 +85,8 @@ L_ttest <- function(data1, data2=NULL, null=0, d=0.5, alt.2=NULL, L.int=2, verb=
   adata <- data1
   if (!is.null(data2)) {
     dat <- data.frame(data1,data2)
-    ad <- dat[complete.cases(dat), ] # remove missing, NA or NaN, case-wise
-    adata <- ad$data2-ad$data1
+    pairsData <- na.omit(dat)       # remove missing listwise
+    adata <- pairsData$data2-pairsData$data1
   }
   t0 <- t.test(adata, mu = null) # t test
   tval <- unname(unlist(abs(t0$statistic))) # t value, abs & remove label

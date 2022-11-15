@@ -65,9 +65,9 @@ L_regress <- function(y, x, verb=TRUE) {
   S_LN <- -0.5 * N * (log(m1$`Sum Sq`[2]) - log(tss))
 
 # Akaike's correction
-  k2 <- 1       # parameters for grand mean
-  k1 <- m1$Df[1] + 1  # parameters for slope and intercept
-  Ac <- k1 - k2
+  k1 <- 2       # parameters for grand mean & variance
+  k2 <- k1 + 1  # null parameters + parameter/df for linear
+  Ac <- k2 - k1
   S_LNc <- S_LN - Ac
 
 # examining non-linearity
