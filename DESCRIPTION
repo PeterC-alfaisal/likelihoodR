@@ -1,6 +1,6 @@
 Package: likelihoodR
 Title: Likelihood Analyses for Common Statistical Tests
-Version: 1.0.7
+Version: 1.0.8
 Authors@R: 
     person(given = "Peter",
            family = "Cahusac",
@@ -22,4 +22,4 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
