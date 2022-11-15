@@ -1,4 +1,5 @@
 # likelihoodR Package
+[![](https://cranlogs.r-pkg.org/badges/likelihoodR)](https://cran.r-project.org/package=likelihoodR)
 
 The likelihood approach is one of several approaches to making
 inferences from data. The best description and justification for the
