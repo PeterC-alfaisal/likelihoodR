@@ -32,7 +32,7 @@ $p.vals - p values for 3 fits.
 This function calculates the supports for different regression fits from 2 vectors of data.
 Models include linear, quadratic and cubic (given sufficient data). A plot is
 included showing linear (black), quadratic (red) and cubic (blue dashed) lines. P values for
-tehe model fits are also given.
+the model fits are also given.
 }
 \examples{
 # for women's world record times for 1500m event example, p 108
