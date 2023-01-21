@@ -34,6 +34,8 @@ $S.exp.ORvsObs - support for expected OR versus observed.
 
 $S.exp.ORvsNull - support for expected OR versus the null.
 
+$HAc - Haldane-Anscombe correction applied when a count is 0.
+
 $L.int - likelihood interval of observed OR for specified level of support.
 
 $S_int - specified likelihood interval in units of support.
