@@ -1,5 +1,5 @@
 # likelihoodR Package 
-### Version 1.0.8
+### Version 1.0.9
 [![](https://cranlogs.r-pkg.org/badges/likelihoodR)](https://cran.r-project.org/package=likelihoodR)
 
 The likelihood approach is one of several approaches to making
