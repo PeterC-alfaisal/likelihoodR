@@ -85,24 +85,30 @@ L_1way_cat <- function(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=
     len <- length(obs)
     n <- sum(obs)
     if (!is.null(exp.p)) {
-      if (sum(exp.p)!=1) return("Error: expected probabilities must sum to 1")
+      if (sum(exp.p)!=1) stop("Error: expected probabilities must sum to 1")
     }
-    if (is.null(exp.p)) {
+    if (is.null(exp.p)) {        # assign expected probabilities equally if not specified
       exp.p <- rep(1/len,each=len)
     }
     exp <- exp.p*n
-    try(if(len < 2) return("Error: Must have more than one category with counts"))
+    try(if(len < 2) stop("Error: Must have more than one category with counts"))  # trap errors
     for (i in 1:len) {
-    try(if(obs[i]<=0) return("Error: Must not have categories with zero or negative counts"))
-    try(if(exp[i]<=0) return("Error: Must not have expected values that are zero or negative"))
+      if(is.na(obs[i])) stop("Error: Must not have categories with NA")
+      if(is.nan(obs[i])) stop("Error: Must not have categories with NaN")
+      if(is.na(exp[i])) stop("Error: Must not have NA for expected")
+      if(is.nan(exp[i])) stop("Error: Must not have NaN for expected")
+      try(if(obs[i] < 0) stop("Error: Must not have categories with negative counts"))
+      try(if(exp[i]<=0) stop("Error: Must not have expected values that are zero or negative"))
+      try(if(len == 2 && obs[i] == 0) stop("Error: Both categories must have counts > 0"))
     }
-    for (i in 1:len) {
-      if(is.na(obs[i])) return("Error: Must not have categories with NA")
-      if(is.nan(obs[i])) return("Error: Must not have categories with NaN")
-      if(is.na(exp[i])) return("Error: Must not have NA for expected")
-      if(is.nan(exp[i])) return("Error: Must not have NaN for expected")
+
+    count1 <- obs               # removing zero counts for support calculations
+    for (i in 1:length(count1)) {
+      count1[i] <- obs[i]
+      if (obs[i] < 1) count1[i]=1   # turn 0s into 1s for one table used for log
     }
-  Sup <- sum(obs*(log(obs)-log(exp)))
+
+  Sup <- sum(obs*(log(count1)-log(exp)))
   df <- (length(obs)-1)
   Supc<- Sup-(df-1)/2 # corrected for df
   suppressWarnings(mc <- chisq.test(obs,p=exp.p,rescale.p = TRUE)) # suppress warnings

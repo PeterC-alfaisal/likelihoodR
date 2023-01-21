@@ -85,17 +85,40 @@
 
 L_2way_cat <- function(table, verb=TRUE) {
 
+# check table is at least 2 x 2
+  if (nrow(table) < 2)
+    stop("Error: fewer than 2 rows")
+  if (ncol(table) < 2)
+    stop("Error: fewer than 2 columns")
+
 # calculating the interaction
   S2way <- 0
+
   suppressWarnings(lt <- chisq.test(table, correct=FALSE)) # ignore warning message
-# lt$observed * log(lt$observed/lt$expected) # individual S terms
-  S2way <- sum( lt$observed * log(lt$observed/lt$expected) )
+
+  tabt1=lt$observed
+  for (i in 1:length(table)) {
+    tabt1[i] <- lt$observed[i]
+    if (lt$observed[i] < 1) tabt1[i]=1   # turn 0s into 1s for one table used for log
+  }
+
+  S2way <- sum(lt$observed * log(tabt1/lt$expected))
+
   df <- unname(lt$parameter)
   S2wayc <- S2way - (df-1)/2
+
 # main marginal totals
 
   row_sum <- rowSums(table)
+  for (i in 1:length(row_sum)) {
+    if (row_sum[i] < 1) stop("Error: marginal totals cannot be 0")
+  }
+
   col_sum <- colSums(table)
+  for (i in 1:length(col_sum)) {
+    if (col_sum[i] < 1) stop("Error: marginal totals cannot be 0")
+  }
+
   grandtot <- sum(table)
   RowMain <- sum(row_sum*log(row_sum))-grandtot*log(grandtot) + grandtot*log(length(row_sum))
   RowMain_c <- RowMain - ((length(row_sum)-1)-1)/2 # corrected for row df
@@ -104,8 +127,8 @@ L_2way_cat <- function(table, verb=TRUE) {
   ColMain_c <- ColMain - ((length(col_sum)-1)-1)/2 # corrected for column df
 
 # Total S
-  Tot_S <- sum(table*log(table))-sum(table)*
-    log(sum(table)/length(table))
+  Tot_S <- sum(lt$observed*log(tabt1))-sum(lt$observed)*log(sum(lt$observed)/length(table))
+
 # same as components added together (without correction for df)
 # S2way + RowMain + ColMain
 
@@ -125,18 +148,20 @@ L_2way_cat <- function(table, verb=TRUE) {
     trX <- prop.trend.test(table[1,], col_sum)
     tr <- unname(trX$statistic)/2      # S for trend
   }
-
-  if(verb) cat("\nSupport for interaction corrected for ", df, " df = ", round(S2wayc,3), sep= "",
+  if(verb) {
+    print(table)
+    cat("\nSupport for interaction corrected for ", df, " df = ", round(S2wayc,3), sep= "",
     "\n Support for rows main effect corrected for ",
     length(row_sum)-1, " df = ", round(RowMain_c,3),
     "\n Support for columns main effect corrected for ", length(col_sum)-1, " df = ",
     round(ColMain_c,3), "\n Total support for whole table = ", round(Tot_S,3),
     "\n Support for trend across columns = ", if (length(col_sum)>=3) round(tr,3),
     "\n Support for variance differing more than expected = ", round(toogood,3),
-    "\n\n Chi-squared(", df, ") = ", round(chi.s,3), ",  p = ", round(lt$p.value,5),
+    "\n\n Chi-squared(", df, ") = ", round(chi.s,3), ",  p = ", signif(lt$p.value,5),
     "\n Likelihood ratio test G(", df, ") = ", round(lrt,3),
-    ", p = ", round(LRt_p,5), ", N = ", grandtot,
+    ", p = ", signif(LRt_p,5), ", N = ", grandtot,
     "\n\n Trend p value from chi-squared = ", if (length(col_sum)>=3) trX$p.value, "\n ")
+  }
 
   invisible(list(S.int = S2wayc, df = df, S.int.unc = S2way,
                S.Main.rows = RowMain_c, S.Main.cols = ColMain_c,
@@ -147,3 +172,4 @@ L_2way_cat <- function(table, verb=TRUE) {
                residuals = lt$residuals, chi.sq = lt$statistic, p.value = lt$p.value,
                LR.test = lrt, lrt.p = LRt_p, trend.p = trX$p.value))
 }
+
