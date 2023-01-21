@@ -1,6 +1,6 @@
 Package: likelihoodR
 Title: Likelihood Analyses for Common Statistical Tests
-Version: 1.0.8
+Version: 1.0.9
 Authors@R: 
     person(given = "Peter",
            family = "Cahusac",
