@@ -1,6 +1,6 @@
 Package: likelihoodR
 Title: Likelihood Analyses for Common Statistical Tests
-Version: 1.0.9
+Version: 1.1.5
 Authors@R: 
     person(given = "Peter",
            family = "Cahusac",
@@ -15,11 +15,13 @@ Description: A collection of functions that calculate the log likelihood
     Royall (1997, ISBN-13 : 978-0412044113), S.N. Goodman & R. Royall 
     (2011) <doi:10.2105/AJPH.78.12.1568>, "Understanding 
     Psychology as a Science" by Z. Dienes (2008, ISBN-13 : 978-0230542310), 
-    S. Glover & P. Dixon <https://link.springer.com/article/10.3758/BF03196706> 
+    S. Glover & P. Dixon <doi:10.3758/BF03196706> 
     and others. This package accompanies "Evidence-Based Statistics" by 
-    P. Cahusac (2020, ISBN-13 : 978-1119549802).
+    P. Cahusac (2020, ISBN-13 : 978-1119549802) 
+    <doi:10.1002/9781119549833>.
 License: GPL-2
 Encoding: UTF-8
 LazyData: false
+Imports: graphics, stats, lme4
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
