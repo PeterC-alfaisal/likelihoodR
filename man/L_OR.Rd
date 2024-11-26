@@ -4,7 +4,8 @@
 \alias{L_OR}
 \title{Likelihood Support for Odds Ratio (OR)}
 \usage{
-L_OR(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, verb=TRUE)
+L_OR(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05,
+cc=FALSE, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \arguments{
 \item{table}{a 2 x 2 matrix or contingency table containing counts.}
@@ -20,6 +21,10 @@ L_OR(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, ve
 \item{cc}{logical indicating whether to apply continuity correction, default = FALSE.}
 
 \item{toler}{the desired accuracy using optimise, default = 0.0001.}
+
+\item{logplot}{plot vertical axis as log likelihood, default = FALSE}
+
+\item{supplot}{set minimum likelihood display value in plot, default = -10}
 
 \item{verb}{show output, default = TRUE.}
 }
@@ -67,7 +72,7 @@ This function calculates the support for an OR from a 2 x 2 categorical data tab
 An expected OR can be specified and the support calculated for this relative to the observed
 and null (which is assumed to be 1, but can also be specified) values. A likelihood function
 is plotted for the obtained OR with a specified likelihood interval, and expected OR,
-if specified.
+if specified. The log likelihood plot can optionally be given instead.
 Chi-squared and likelihood ratio test (G) statistics are also provided and a likelihood-based \% confidence interval.
 It uses the optimize function to locate desired limits for both intervals and other
 support calculations.
@@ -76,7 +81,8 @@ support calculations.
 # for folic acid and neural tube defects example, p 146
 tab <- as.table(rbind(c(6,587),c(21,581)))
 dimnames(tab) <- list(Treatment=c("Folic acid","None"),Defect=c("Yes","No"))
-L_OR(tab, exp.OR = 0.5, L.int = 2)
+L_OR(tab, exp.OR = 0.5, L.int = 2, alpha=0.05, cc=FALSE,
+toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 
 }
 \references{

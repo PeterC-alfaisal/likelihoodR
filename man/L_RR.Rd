@@ -4,7 +4,8 @@
 \alias{L_RR}
 \title{Likelihood Support for Relative Risk (RR)}
 \usage{
-L_RR(table, null=1, exp.RR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, verb=TRUE)
+L_RR(table, null=1, exp.RR=NULL, L.int=2, alpha=0.05,
+cc=FALSE, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \arguments{
 \item{table}{a 2 x 2 matrix or contingency table containing counts.}
@@ -20,6 +21,10 @@ L_RR(table, null=1, exp.RR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, ve
 \item{cc}{logical indicating whether to apply continuity correction, default = FALSE.}
 
 \item{toler}{the desired accuracy using optimise, default = 0.0001.}
+
+\item{logplot}{plot vertical axis as log likelihood, default = FALSE}
+
+\item{supplot}{set minimum likelihood display value in plot, default = -10}
 
 \item{verb}{show output, default = TRUE.}
 }
@@ -61,7 +66,7 @@ This function calculates the support for an RR from a 2 x 2 categorical data tab
 An expected RR can be specified and the support calculated for this relative to the observed
 and null (which is assumed to be 1, but can also be specified) values. A likelihood function
 is plotted for the obtained RR with a likelihood interval, and expected RR,
-if specified.
+if specified. The log likelihood plot can optionally be given instead.
 Chi-squared statistics are also provided and a likelihood-based \% confidence interval.
 It uses the optimize function to locate desired limits for both intervals and other
 support calculations.
@@ -70,12 +75,14 @@ support calculations.
 # for folic acid and neural tube defects example
 tab <- as.table(rbind(c(6,587),c(21,581)))
 dimnames(tab) <- list(Treatment=c("Folic acid","None"),Defect=c("Yes","No"))
-L_RR(tab, exp.RR = 0.5, L.int = 2)
+L_RR(tab, exp.RR = 0.5, L.int = 2, alpha=0.05, cc=FALSE,
+toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 
 # S. Korea COVID-19 patient mortality
 tabcor <- as.table(rbind(c(41,3095),c(34,4992)))
 dimnames(tabcor) <- list(Sex=c("Male","Female"),Status=c("Dead","Alive"))
-L_RR(tabcor, exp.RR = 0.5, L.int = 2)
+L_RR(tabcor, exp.RR = 0.5, L.int = 2, alpha=0.05, cc=FALSE, toler=0.0001,
+logplot=FALSE, supplot=-10, verb=TRUE)
 
 }
 \references{

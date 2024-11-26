@@ -4,7 +4,8 @@
 \alias{L_corr}
 \title{Likelihood Support for Correlation}
 \usage{
-L_corr(xv, yv, null=0, exp.r=NULL, L.int=2, alpha=.05, verb=TRUE)
+L_corr(xv, yv, null=0, exp.r=NULL, L.int=2, alpha=.05,
+toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \arguments{
 \item{xv}{a numeric vector.}
@@ -18,6 +19,12 @@ L_corr(xv, yv, null=0, exp.r=NULL, L.int=2, alpha=.05, verb=TRUE)
 \item{L.int}{likelihood interval given as support values, e.g. 2 or 3, default = 2.}
 
 \item{alpha}{the significance level used, 1 - alpha interval calculated, default = 0.05.}
+
+\item{toler}{the desired accuracy using optimise, default = 0.0001.}
+
+\item{logplot}{plot vertical axis as log likelihood, default = FALSE}
+
+\item{supplot}{set minimum likelihood display value in plot, default = -10}
 
 \item{verb}{show output, default = TRUE.}
 }
@@ -62,7 +69,8 @@ m800 <- c(128.5,	126.1,	124.2,	132.5,
 136.1,	142.8,	125.8, 131.5,	137.1,	134.9,
 146.7,	133.9,	146.4,	144.0,	133.4,
 138.0,	139.2,	137.3,	163.4)
-m=L_corr(m200, m800, null=0, exp.r=.4, L.int=3, alpha=.05)
+m=L_corr(m200, m800, null=0, exp.r=.4, L.int=3, alpha=.05,
+toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 m
 #Note: the support for observed vs 0 is different from book (5.776 vs 5.700)
 #due to differences in calculation of r by Excel and R

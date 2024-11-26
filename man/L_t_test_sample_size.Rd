@@ -48,6 +48,9 @@ v
 \references{
 Cahusac, P.M.B. (2020) Evidence-Based Statistics, Wiley, ISBN : 978-1119549802
 
+Cahusac, P.M.B. & Mansour, S.E. (2022) Estimating sample sizes for evidential t tests, Research in Mathematics, 9(1):1-12
+https://doi.org/10.1080/27684830.2022.2089373
+
 Royall, R. (2000). "On the Probability of Observing Misleading Statistical Evidence." Journal of the
 American Statistical Association 95(451): 760.
 

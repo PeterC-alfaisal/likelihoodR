@@ -4,7 +4,8 @@
 \alias{L_efficacy}
 \title{Likelihood Support for Efficacy}
 \usage{
-L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE)
+L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2,
+alpha=0.05, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \arguments{
 \item{a}{the number of affected in control group.}
@@ -20,6 +21,10 @@ L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=T
 \item{alpha}{the significance level used, 1 - alpha interval calculated, default = 0.05.}
 
 \item{toler}{the desired accuracy using optimise, default = 0.0001.}
+
+\item{logplot}{plot vertical axis as log likelihood, default = FALSE}
+
+\item{supplot}{set minimum likelihood display value in plot, default = -10}
 
 \item{verb}{show output, default = TRUE.}
 }
@@ -65,7 +70,8 @@ It uses the optimize function to locate desired limits and their error.
 }
 \examples{
 # pfizer covid-19 efficacy 2020
-m = L_efficacy(a = 86, n = 94, null=0.8, exp.eff=0.95, L.int=2, alpha=0.05, toler=0.0001)
+m = L_efficacy(a = 86, n = 94, null=0.8, exp.eff=0.95, L.int=2,
+alpha=0.05, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 m
 
 }

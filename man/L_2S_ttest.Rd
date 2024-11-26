@@ -4,7 +4,8 @@
 \alias{L_2S_ttest}
 \title{Likelihood Supports for Independent Samples t Test}
 \usage{
-L_2S_ttest(data, group, veq=0, null=0, d=0.5, alt.2=NULL, L.int=2, verb=TRUE)
+L_2S_ttest(data, group, veq=0, null=0, d=0.5, alt.2=NULL,
+L.int=2, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \arguments{
 \item{data}{a (non-empty) numeric vector of data values.}
@@ -20,6 +21,12 @@ L_2S_ttest(data, group, veq=0, null=0, d=0.5, alt.2=NULL, L.int=2, verb=TRUE)
 \item{alt.2}{value for an alternative hypothesis, in units used for data, default = NULL.}
 
 \item{L.int}{likelihood interval given as support values, e.g. 2 or 3, default = 2.}
+
+\item{toler}{the desired accuracy using optimise, default = 0.0001.}
+
+\item{logplot}{plot vertical axis as log likelihood, default = FALSE}
+
+\item{supplot}{set minimum likelihood display value in plot, default = -10}
 
 \item{verb}{show output, default = TRUE.}
 }
@@ -71,7 +78,8 @@ homogeneity of variance is not required.
 # using a variation on Gosset's original additional hours of sleep data, p 59
 mysample <- c(0.7, -1.6, -0.2, -1.2, -0.1, 3.4, 3.7, 0.8, 0.0, 2.0)
 treat <- rep(1:0,each=5)
-L_2S_ttest(mysample, treat, veq=0, null=0, d=0.5, alt.2=2, L.int=2)
+L_2S_ttest(mysample, treat, veq=0, null=0, d=0.5, alt.2=2, L.int=2,
+toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 
 }
 \references{

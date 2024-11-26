@@ -4,7 +4,8 @@
 \alias{L_ttest}
 \title{Likelihood Supports for the One Sample and Related Samples t Test}
 \usage{
-L_ttest(data1, data2, null=0, d=0.5, alt.2=NULL, L.int=2, verb=TRUE)
+L_ttest(data1, data2, null=0, d=0.5, alt.2=NULL,
+L.int=2, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \arguments{
 \item{data1}{a (non-empty) numeric vector of data values.}
@@ -18,6 +19,12 @@ L_ttest(data1, data2, null=0, d=0.5, alt.2=NULL, L.int=2, verb=TRUE)
 \item{alt.2}{value for an alternative hypothesis, in units used for data, default = NULL.}
 
 \item{L.int}{likelihood interval given for a given support value, e.g. 2 or 3, default = 2.}
+
+\item{toler}{the desired accuracy using optimise, default = 0.0001.}
+
+\item{logplot}{plot vertical axis as log likelihood, default = FALSE}
+
+\item{supplot}{set minimum likelihood display value in plot, default = -10}
 
 \item{verb}{show output, default = TRUE.}
 }
@@ -68,7 +75,8 @@ L_ttest(mysample, d=.5, alt.2=2, L.int=2)
 
 # related samples, p 56
 mysample2 <- c(1.9, 0.8, 1.1, 0.1, -0.1, 4.4, 5.5, 1.6, 4.6, 3.4)
-L_ttest(mysample, mysample2, d=1, alt.2=2, L.int=2)
+L_ttest(mysample, mysample2, d=1, alt.2=2, L.int=2,
+toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \references{
 Cahusac, P.M.B. (2020) Evidence-Based Statistics, Wiley, ISBN : 978-1119549802

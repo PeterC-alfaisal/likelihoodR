@@ -4,7 +4,7 @@
 \alias{L_1way_RM_ANOVA}
 \title{Likelihood Supports for One-way Repeated Measures ANOVA}
 \usage{
-L_1way_RM_ANOVA(dat, group, ID, contrast1=NULL, contrast2=NULL, verb=TRUE)
+L_1way_RM_ANOVA(dat, group, ID, correct=1, contrast1=NULL, contrast2=NULL, verb=TRUE)
 }
 \arguments{
 \item{dat}{a (non-empty) numeric vector of data values.}
@@ -13,6 +13,8 @@ L_1way_RM_ANOVA(dat, group, ID, contrast1=NULL, contrast2=NULL, verb=TRUE)
 
 \item{ID}{is an identifier for each case.}
 
+\item{correct}{specifies the correction: 0 = none, 1 = Occam's bonus (default), 2 = AIC}
+
 \item{contrast1}{first contrast, default = NULL.}
 
 \item{contrast2}{second contrast, default = NULL.}
@@ -20,7 +22,11 @@ L_1way_RM_ANOVA(dat, group, ID, contrast1=NULL, contrast2=NULL, verb=TRUE)
 \item{verb}{show output, default = TRUE.}
 }
 \value{
-$S.12 - support for groups means hypothesis versus null.
+$S.12 - support for groups means hypothesis versus null, uncorrected
+
+$S.12c - corrected
+
+$capplied - type of correction
 
 $S.1m = support for first contrast versus means model.
 
@@ -46,9 +52,9 @@ $P.val1 - p value for the contrast.
 }
 \description{
 This function calculates support for the treatment means versus the null model,
+Type of correction for the parameters in the null versus the means model can be selected.
 support for the first contrast versus the group means model and the
 support for the first versus the second contrast.
-No correction is made for treatment degrees of freedom.
 Also gives the F, p and partial eta-squared values for the overall analysis,
 and F and p for the first contrast. Assumes sphericity.
 }
@@ -62,7 +68,7 @@ patients <- gl(10,1,30)
 contrast1 <- c(-1, 0, 1)  # linear
 contrast2 <- c(-2, 1, 1)  # 1st vs treatments 2 & 3
 
-m=L_1way_RM_ANOVA(dat, treat, patients, contrast1, contrast2)
+m=L_1way_RM_ANOVA(dat, treat, patients, correct=1, contrast1, contrast2)
 m
 
 }

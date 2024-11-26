@@ -4,7 +4,8 @@
 \alias{L_1way_cat}
 \title{Likelihood Support for One-way Categorical Data}
 \usage{
-L_1way_cat(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE)
+L_1way_cat(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001,
+logplot=FALSE, supplot=-10, verb=TRUE)
 }
 \arguments{
 \item{obs}{a vector containing the number of counts in each category.}
@@ -16,6 +17,10 @@ L_1way_cat(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE)
 \item{alpha}{the significance level used, 1 - alpha interval calculated, default = 0.05.}
 
 \item{toler}{the desired accuracy using optimise, default = 0.0001.}
+
+\item{logplot}{plot vertical axis as log likelihood, default = FALSE}
+
+\item{supplot}{set minimum likelihood display value in plot, default = -10}
 
 \item{verb}{show output, default = TRUE.}
 }
@@ -68,12 +73,13 @@ It uses the optimize function to locate desired limits for both intervals.
 \examples{
 # example for binomial, p 123
 obs <- c(6,4)
-L_1way_cat(obs, L.int=3)
+L_1way_cat(obs, L.int=2, toler=0.0001, logplot=FALSE, supplot=-10, verb = TRUE)
 
 # example for multinomial, p 134
 obs <- c(60,40,100)
 exp <- c(0.25,0.25,0.5)
-L_1way_cat(obs, exp.p=exp)
+L_1way_cat(obs, exp.p=exp, L.int=2, toler=0.0001, logplot=FALSE, supplot=-10,
+verb = TRUE)
 
 }
 \references{
