@@ -45,6 +45,9 @@
 #' @references
 #' Cahusac, P.M.B. (2020) Evidence-Based Statistics, Wiley, ISBN : 978-1119549802
 #'
+#' Cahusac, P.M.B. & Mansour, S.E. (2022) Estimating sample sizes for evidential t tests, Research in Mathematics, 9(1):1-12
+#' https://doi.org/10.1080/27684830.2022.2089373
+#'
 #' Royall, R. (2000). "On the Probability of Observing Misleading Statistical Evidence." Journal of the
 #' American Statistical Association 95(451): 760.
 #'
@@ -67,13 +70,13 @@ L_t_test_sample_size <- function(MW = 0.05, sd = 1, d = 1.2, S = 3, paired = FAL
 
     f <- function(n, MW, nul, d, sd, S) {
       tmw <- qt(MW,df=n-1, lower.tail =TRUE)
-      Xu <- nul+(d*sd*(1-sqrt((exp(-(2*S/n))-(1-exp(-(2*S/n)))^2*(n-1)/
-                                 (n*d^2))))/((1-exp(-(2*S/n)))))
+      suppressWarnings(Xu <- nul+(d*sd*(1-sqrt((exp(-(2*S/n))-(1-exp(-(2*S/n)))^2*(n-1)/
+                                 (n*d^2))))/((1-exp(-(2*S/n))))))
       to <- (Xu-d*sd)*sqrt(n)/sd
       td <- (to-tmw)^2
     }
-    xmin1 <- optimize(f, c(3, 1000), tol = toler, MW, nul, d, sd, S)
-    ns <- round(xmin1$minimum,0)
+    suppressWarnings(xmin1 <- optimize(f, c(3, 10000000), tol = toler, MW, nul, d, sd, S))
+    ns <- ceiling(xmin1$minimum)   # use ceiling rather than round, to get to nearest N
 
     if(verb) cat("\nFor 1 sample, or related samples, t test with M1 + W1 probability of ", MW,
         "\n Strength of evidence required is ", S,
@@ -84,13 +87,13 @@ L_t_test_sample_size <- function(MW = 0.05, sd = 1, d = 1.2, S = 3, paired = FAL
 
     g <- function(n, MW, nul, d, sd, S) {
       tmw <- qt(MW,df=n-2, lower.tail =TRUE)
-      Xu <- nul+(d*sd*(1-sqrt((exp(-(2*S/n))-(1-exp(-(2*S/n)))^2*(n-2)/
-                                 (n*d^2))))/((1-exp(-(2*S/n)))))
+      suppressWarnings(Xu <- nul+(d*sd*(1-sqrt((exp(-(2*S/n))-(1-exp(-(2*S/n)))^2*(n-2)/
+                                 (n*d^2))))/((1-exp(-(2*S/n))))))
       to <- (Xu-d*sd)*sqrt(n)/(2*sd)
       td <- (to-tmw)^2
     }
-    xmin1 <- optimize(g, c(3, 1000), tol = toler, MW, nul, d, sd, S)
-    ns <- round(xmin1$minimum,0)
+    suppressWarnings(xmin1 <- optimize(g, c(3, 10000000), tol = toler, MW, nul, d, sd, S))
+    ns <- ceiling(xmin1$minimum) # use ceiling rather than round, to get to nearest total N
 
     if (lapply(ns, "%%", 2) != 0) ns <- ns+1 # make even N for 2 samples
     if(verb) cat("\nFor independent samples t test with M1 + W1 probability of ", MW,

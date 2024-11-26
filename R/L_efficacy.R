@@ -4,7 +4,8 @@
 #' and the likelihood-based confidence interval.
 #' It uses the optimize function to locate desired limits and their error.
 #'
-#' @usage L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE)
+#' @usage L_efficacy(a, n, null=0, exp.eff=NULL, L.int=2,
+#' alpha=0.05, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 #'
 #' @param a the number of affected in control group.
 #' @param n total number of participants.
@@ -13,6 +14,8 @@
 #' @param L.int likelihood interval given as support values, e.g. 2 or 3, default = 2.
 #' @param alpha the significance level used, 1 - alpha interval calculated, default = 0.05.
 #' @param toler the desired accuracy using optimise, default = 0.0001.
+#' @param logplot plot vertical axis as log likelihood, default = FALSE
+#' @param supplot set minimum likelihood display value in plot, default = -10
 #' @param verb show output, default = TRUE.
 #'
 #' @return
@@ -60,7 +63,8 @@
 #' @importFrom graphics segments
 #'
 #' @examples # pfizer covid-19 efficacy 2020
-#' m = L_efficacy(a = 86, n = 94, null=0.8, exp.eff=0.95, L.int=2, alpha=0.05, toler=0.0001)
+#' m = L_efficacy(a = 86, n = 94, null=0.8, exp.eff=0.95, L.int=2,
+#' alpha=0.05, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 #' m
 #'
 #' @references Aitkin, M. et al (1989) Statistical Modelling in GLIM, Clarendon Press, ISBN : 978-0198522041
@@ -72,7 +76,7 @@
 #' Edwards, A.W.F. (1992) Likelihood, Johns Hopkins Press, ISBN : 978-0801844430
 
 
-L_efficacy <- function(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE){
+L_efficacy <- function(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE){
 
   r = n - a; eff = (a - r)/a; goal = -qchisq(1-alpha,1)/2
 
@@ -110,11 +114,11 @@ L_efficacy <- function(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.
   begL <- (n - 2*xmin2L$minimum)/(n-xmin2L$minimum)
   endL <- (n - 2*xmin1L$minimum)/(n-xmin1L$minimum)
 
-  if (eff < 0) { lolim <- -1; hilim <- 0}
-  if (eff < .5) { lolim <- 0; hilim <- eff + 6*sqrt(eff*(1-eff)/n)
-  } else {hilim <- 1; lolim <- eff - 6*sqrt(eff*(1-eff)/n)}
-  if (lolim < -1) {lolim <- -1}
-  if (hilim > 1) {hilim <- 1}
+  goalx <- supplot
+  xmin1x <- optimize(f, c(-1, r), tol = toler, a, r, goalx)
+  xmin2x <- optimize(f, c(r, n), tol = toler, a, r, goalx)
+  lolim <- (n - 2*xmin2x$minimum)/(n-xmin2x$minimum)
+  hilim <- (n - 2*xmin1x$minimum)/(n-xmin1x$minimum)
 
   res <- 100
   arrlen <- res*n-1
@@ -125,7 +129,7 @@ L_efficacy <- function(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.
     ys[i] <- exp(-(a*log(a)+r*log(r)-(a*log(n-dv)+r*log(dv))))
     xs[i] <- (n-2*dv)/(n-dv)
   }
-
+  if(isFALSE(logplot)) {
   plot(xs, ys, xlim = c(lolim,hilim), type="l", lwd = 1,
         xlab = "Efficacy", ylab = "Likelihood")
   lines(c(eff,eff),c(0,1),lty=2) # add MLE as dashed line
@@ -133,6 +137,16 @@ L_efficacy <- function(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.
   lines(c(null,null), c(0,n_a_h), lty=1, col = "black") # add black line for null
   if (!is.null(exp.eff)) {
     lines(c(exp.eff,exp.eff), c(0,x_a_h), lty=1, col = "blue") # add H prob as blue line
+   }
+  } else {
+    plot(xs, log(ys), xlim = c(lolim,hilim), type="l", lwd = 1,
+         xlab = "Efficacy", ylim = c(supplot,0), ylab = "Log Likelihood")
+    lines(c(eff,eff),c(supplot,0),lty=2) # add MLE as dashed line
+    segments(begL, goalL, endL, goalL, lwd = 0.2, col = "red")
+    lines(c(null,null), c(supplot,log(n_a_h)), lty=1, col = "black") # add black line for null
+    if (!is.null(exp.eff)) {
+      lines(c(exp.eff,exp.eff), c(supplot,log(x_a_h)), lty=1, col = "blue") # add H prob as blue line
+    }
   }
 
   if(verb) cat("\nSupport for observed efficacy ", round(eff,4), " (dashed line) versus null of ", null,
@@ -141,7 +155,7 @@ L_efficacy <- function(a, n, null=0, exp.eff=NULL, L.int=2, alpha=0.05, toler=0.
       "\n Support for specified efficacy versus null value = ",
       if (!is.null(exp.eff)) round(S.exp_null,3), sep= "", "\n   S-", L.int,
       " likelihood interval (red line) is from ", c(round(begL,5), " to ", round(endL,5)),
-      "\n\nChi-square(1) = ", round(lt$statistic,3), ",  p = ", round(lt$p.value,4), ", N = ",
+      "\n\nChi-square(1) = ", round(lt$statistic,3), ",  p = ", format.pval(lt$p.value,4), ", N = ",
       n, "\n   Likelihood-based ", 100*(1-alpha), "% confidence interval from ",
       c(round(beg,5), " to ", round(end,5)), "\n ")
 

@@ -111,8 +111,8 @@ L_regress <- function(y, x, verb=TRUE) {
       "\n Support for quadratic versus linear fit = ", round(S_QLc,3),
       "\n Support for quadratic versus cubic = ", round(S_QCc,3),
        "\n N = ", N,
-      "\n P values for linear, quadratic and cubic fits = ", m3$`Pr(>F)`[1],
-      "  ", m3$`Pr(>F)`[2], "  ", m3$`Pr(>F)`[3], "\n ")
+      "\n P values for linear, quadratic and cubic fits = ", format.pval(m3$`Pr(>F)`[1],4),
+      "  ", format.pval(m3$`Pr(>F)`[2],4), "  ", format.pval(m3$`Pr(>F)`[3],4), "\n ")
 
   invisible(list(S.LNc = S_LNc, S.LN = S_LN, S.QLc = S_QLc, S.QL = S_QL,
                S.QCc = S_QCc, N = N, p.vals = m3$`Pr(>F)`[1:3]))

@@ -8,14 +8,16 @@
 #' Cahusac p 158) is also calculated.
 #' It uses the optimize function to locate desired limits for both intervals.
 #'
-#' @usage L_1way_cat(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE)
+#' @usage L_1way_cat(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001,
+#' logplot=FALSE, supplot=-10, verb=TRUE)
 #' @param obs a vector containing the number of counts in each category.
 #' @param exp.p a vector containing expected probabilities. If NULL then this is 1/#cats.
 #' @param L.int likelihood interval given as support values, e.g. 2 or 3, default = 2.
 #' @param alpha the significance level used, 1 - alpha interval calculated, default = 0.05.
 #' @param toler the desired accuracy using optimise, default = 0.0001.
+#' @param logplot plot vertical axis as log likelihood, default = FALSE
+#' @param supplot set minimum likelihood display value in plot, default = -10
 #' @param verb show output, default = TRUE.
-#'
 #'
 #' @return
 #' $S.val - support for one-way observed versus expected.
@@ -66,12 +68,13 @@
 #'
 #' @examples # example for binomial, p 123
 #' obs <- c(6,4)
-#' L_1way_cat(obs, L.int=3)
+#' L_1way_cat(obs, L.int=2, toler=0.0001, logplot=FALSE, supplot=-10, verb = TRUE)
 #'
 #' # example for multinomial, p 134
 #' obs <- c(60,40,100)
 #' exp <- c(0.25,0.25,0.5)
-#' L_1way_cat(obs, exp.p=exp)
+#' L_1way_cat(obs, exp.p=exp, L.int=2, toler=0.0001, logplot=FALSE, supplot=-10,
+#' verb = TRUE)
 #'
 #' @references Aitkin, M. et al (1989) Statistical Modelling in GLIM, Clarendon Press, ISBN : 978-0198522041
 #'
@@ -81,7 +84,7 @@
 #'
 #' Edwards, A.W.F. (1992) Likelihood, Johns Hopkins Press, ISBN : 978-0801844430
 
-L_1way_cat <- function(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=TRUE) {
+L_1way_cat <- function(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE) {
     len <- length(obs)
     n <- sum(obs)
     if (!is.null(exp.p)) {
@@ -121,44 +124,61 @@ L_1way_cat <- function(obs, exp.p=NULL, L.int=2, alpha=0.05, toler=0.0001, verb=
     if(verb) cat("\nSupport for difference from expected, corrected for ", df, " df = ",  round(Supc,3), sep= "",
       "\n Support for variance differing more than expected = ",
       round(toogood,3), "\n\n Chi-square(", df, ") = ", chi.s,
-      ",  p = ", round(p.value,5),
+      ",  p = ", format.pval(p.value,4),
       "\n Likelihood ratio test G(", df, ") = ", round(lrt,3),
-    ", p = ", round(LRt_p,5), ", N = ", n, "\n ")
+    ", p = ", format.pval(LRt_p,4), ", N = ", n, "\n ")
   return(invisible(list(S.val = Supc, uncorrected.sup = Sup, df = df,
               observed = obs, exp.p = exp.p, too.good = toogood,
               chi.sq = chi.s, p.value = p.value)))
   }
 # for binomial
   a <- obs[1]; r <- obs[2]
-  p = a/n; goal = -qchisq(1-alpha,1)/2
+  p = a/n
+
 # likelihood-based % confidence interval
   x=0
+
   f <- function(x,a,r,p,goal) (a*log(x)+r*log(1-x)-(a*log(p)+r*log(1-p))-goal)^2
+
+  goal = -qchisq(1-alpha,1)/2
   xmin1 <- optimize(f, c(0, p), tol = toler, a, r, p, goal)
   xmin2 <- optimize(f, c(p, 1), tol = toler, a, r, p, goal)
+
 # same for likelihood
   goal <- -L.int
   xmin1L <- optimize(f, c(0, p), tol = toler, a, r, p, goal)
   xmin2L <- optimize(f, c(p, 1), tol = toler, a, r, p, goal)
 
-  if (p < .5) { lolim <- p - 4*sqrt(p*(1-p)/n); hilim <- p + 4*sqrt(p*(1-p)/n)
-  } else {hilim <- p + 4*sqrt(p*(1-p)/n); lolim <- p - 4*sqrt(p*(1-p)/n)}
-  if (lolim < 0) {lolim <- 0}
-  if (hilim > 1) {hilim <- 1}
+# to determine x axis space for plot
+  goalx <- supplot    # with e^-10 we get x values for when curve is down to 0.00004539
+  xmin1x <- optimize(f, c(0, p), tol = toler, a, r, p, goalx)
+  xmin2x <- optimize(f, c(p, 1), tol = toler, a, r, p, goalx)
+  lolim <- xmin1x$minimum
+  hilim <- xmin2x$minimum
 
+  if(isFALSE(logplot)) {
   curve((x^a*(1-x)^r)/(p^a*(1-p)^r), from = 0, to = 1, xlim = c(lolim,hilim), xlab = "Probability", ylab = "Likelihood")
   lines(c(p,p),c(0,1),lty=2) # add MLE as dashed line
   lines(c(exp.p[1],exp.p[1]),c(0,(exp.p[1]^a*(1-exp.p[1])^r)/(p^a*(1-p)^r)),
                                 lty=1, col = "blue") # add H prob as blue line
   segments(xmin1L$minimum, exp(goal), xmin2L$minimum, exp(goal), lwd = 0.2, col = "red")
-  if(verb) cat("\nBinomial support for difference of MLE ", p, " (dashed line) \n from ", exp.p[1],
+  } else {
+    curve(log((x^a*(1-x)^r)/(p^a*(1-p)^r)), from = 0, to = 1, xlim = c(lolim,hilim), xlab = "Probability",
+          ylim = c(supplot,0), ylab = "Log Likelihood")
+    lines(c(p,p),c(supplot,0),lty=2) # add MLE as dashed line
+    lines(c(exp.p[1],exp.p[1]),c(supplot,log((exp.p[1]^a*(1-exp.p[1])^r)/(p^a*(1-p)^r))),
+          lty=1, col = "blue") # add H prob as blue line
+    segments(xmin1L$minimum, goal, xmin2L$minimum, goal, lwd = 0.2, col = "red")
+  }
+
+    if(verb) cat("\nBinomial support for difference of MLE ", p, " (dashed line) \n from ", exp.p[1],
       " (blue line) with ", df, " df = ", round(Sup,3), sep= "",
       "\n Support for variance differing more than expected = ", round(toogood,3),
       "\n\n S-", L.int," likelihood interval (red line) from ",
       c(round(xmin1L$minimum,5), " to ", round(xmin2L$minimum,5)),
-      "\n\nChi-square(", df, ") = ", round(chi.s,3), ",  p = ", p.value,
+      "\n\nChi-square(", df, ") = ", round(chi.s,3), ",  p = ", format.pval(p.value,4),
       "\n Likelihood ratio test G(", df, ") = ", round(lrt,3),
-      ", p = ", round(LRt_p,5),", N = ", n,
+      ", p = ", format.pval(LRt_p,4),", N = ", n,
       "\n Likelihood-based ", 100*(1-alpha), "% confidence interval from ",
       c(round(xmin1$minimum,5), " to ", round(xmin2$minimum,5)), "\n ")
   invisible(list(S.val = Sup, uncorrected.sup = Sup, df = df, prob.val = p,

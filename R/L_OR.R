@@ -4,12 +4,13 @@
 #' An expected OR can be specified and the support calculated for this relative to the observed
 #' and null (which is assumed to be 1, but can also be specified) values. A likelihood function
 #' is plotted for the obtained OR with a specified likelihood interval, and expected OR,
-#' if specified.
+#' if specified. The log likelihood plot can optionally be given instead.
 #' Chi-squared and likelihood ratio test (G) statistics are also provided and a likelihood-based % confidence interval.
 #' It uses the optimize function to locate desired limits for both intervals and other
 #' support calculations.
 #'
-#' @usage L_OR(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, verb=TRUE)
+#' @usage L_OR(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05,
+#' cc=FALSE, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 #'
 #' @param table a 2 x 2 matrix or contingency table containing counts.
 #' @param null the value against which the obtained OR is tested, default = 1.
@@ -18,6 +19,8 @@
 #' @param alpha the significance level used, 1 - alpha interval calculated, default = 0.05.
 #' @param cc logical indicating whether to apply continuity correction, default = FALSE.
 #' @param toler the desired accuracy using optimise, default = 0.0001.
+#' @param logplot plot vertical axis as log likelihood, default = FALSE
+#' @param supplot set minimum likelihood display value in plot, default = -10
 #' @param verb show output, default = TRUE.
 #'
 #' @return
@@ -73,7 +76,8 @@
 #' @examples # for folic acid and neural tube defects example, p 146
 #' tab <- as.table(rbind(c(6,587),c(21,581)))
 #' dimnames(tab) <- list(Treatment=c("Folic acid","None"),Defect=c("Yes","No"))
-#' L_OR(tab, exp.OR = 0.5, L.int = 2)
+#' L_OR(tab, exp.OR = 0.5, L.int = 2, alpha=0.05, cc=FALSE,
+#' toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE)
 #'
 #' @references Aitkin, M. et al (1989) Statistical Modelling in GLIM, Clarendon Press, ISBN : 978-0198522041
 #'
@@ -88,7 +92,7 @@
 #'
 
 
-L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, verb=TRUE) {
+L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, toler=0.0001, logplot=FALSE, supplot=-10, verb=TRUE) {
 
   SexOR_null=NULL  #NULL when exp.OR not specified
   SexOR_obs=NULL
@@ -119,8 +123,6 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
   grandtot <- c1tot+c2tot
   minmarg <- min(r1tot,r2tot,c1tot,c2tot)
   maxmarg <- max(r1tot,r2tot,c1tot,c2tot)
-
-  toler=0.0001
 
   # chi-square
   suppressWarnings(lt <- chisq.test(tab,correct=cc)) # ignore warning message
@@ -179,12 +181,6 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
   begL <- xmin1L$minimum*(r2tot-c1tot+xmin1L$minimum)/((c1tot-xmin1L$minimum)*(r1tot-xmin1L$minimum))
   endL <- xmin2L$minimum*(r2tot-c1tot+xmin2L$minimum)/((c1tot-xmin2L$minimum)*(r1tot-xmin2L$minimum))
 
-  # to determine x axis space for plot
-  dif <- orv-begL
-  lolim <- orv - 3*dif; hilim <- orv + 4*dif
-  if (orv < 1 ) { hilim <- orv + 6*dif}
-  if (lolim < 0) {lolim <- 0}
-
   # to determine height of exp.OR and nul on likelihood function
   if (!is.null(exp.OR)) {
       goal <- exp.OR
@@ -220,16 +216,27 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
   }
 
   # to determine x axis space for plot
-  seor <- sqrt(1/a+1/b+1/c+1/d)
-  lolim <- exp(log(orv)-3*seor); hilim <- exp(log(orv)+3*seor)
-  if (lolim < 0) {lolim <- 0}
+  goalx <- supplot   # with e^-10 we get x values for when curve is down to 0.00004539
+  suppressWarnings(xmin1x <- optimize(f, c(0, a), tol = toler, a, b, c, d, c1tot, r1tot, r2tot, goalx))
+  suppressWarnings(xmin2x <- optimize(f, c(a, dve), tol = toler, a, b, c, d, c1tot, r1tot, r2tot, goalx))
+  lolim <- xmin1x$minimum*(r2tot-c1tot+xmin1x$minimum)/((c1tot-xmin1x$minimum)*(r1tot-xmin1x$minimum))
+  hilim <- xmin2x$minimum*(r2tot-c1tot+xmin2x$minimum)/((c1tot-xmin2x$minimum)*(r1tot-xmin2x$minimum))
 
   # do the plot with lines
+
+  if(isFALSE(logplot)) {
   plot <- plot(xs, ys, xlim=c(lolim,hilim),type="l", lwd = 1, xlab = "Odds Ratio", ylab = "Likelihood")
   lines(c(orv,orv),c(0,1),lty=2) # add MLE as dashed line
   segments(begL, exp(goalL), endL, exp(goalL), lwd = 1, col = "red")
   lines(c(null,null),c(0,nullh), lty=1, col = "black") # add H prob as black line
   lines(c(exp.OR,exp.OR), c(0,xah), lty=1, col = "blue") # add H prob as blue line
+  } else {
+  plot <- plot(xs, log(ys), xlim=c(lolim,hilim), ylim=c(supplot,0), type="l", lwd = 1, xlab = "Odds Ratio", ylab = "Log Likelihood")
+  lines(c(orv,orv),c(supplot,0),lty=2) # add MLE as dashed line
+  segments(begL, goalL, endL, goalL, lwd = 1, col = "red")
+  lines(c(null,null),c(supplot,log(nullh)), lty=1, col = "black") # add H prob as black line
+  lines(c(exp.OR,exp.OR), c(supplot,log(xah)), lty=1, col = "blue") # add H prob as blue line
+  }
 
 # direct calculation of OR support
   suppressWarnings(lt <- chisq.test(table,correct=cc)) # ignore warning message
@@ -250,7 +257,7 @@ L_OR <- function(table, null=1, exp.OR=NULL, L.int=2, alpha=0.05, cc=FALSE, tole
      if (isTRUE(HAc)) "\n Haldane-Anscombe correction applied for 0 count",
       sep= "", "\n   S-", L.int," likelihood interval (red line) is from ",
       c(round(begL,5), " to ", round(endL,5)),
-      "\n\nChi-square(1) = ", round(lt$statistic,3), ",  p = ", signif(lt$p.value,5),
+      "\n\nChi-square(1) = ", round(lt$statistic,3), ",  p = ", format.pval(lt$p.value,4),
       "\n Likelihood ratio test G(1) = ", round(lrt,3),
       ", p = ", signif(LRt_p,5),", N = ", grandtot,
       "\n   Likelihood-based ", 100*(1-alpha), "% confidence interval from ",

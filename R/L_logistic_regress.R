@@ -107,9 +107,9 @@ L_logistic_regress <- function(yv, p1, p2=NULL, p3=NULL, p4=NULL, p5=NULL, p6=NU
       "\n Support for 6th predictor versus the full model = ", round(S[6],3),
       "\n\nFor full over null chi-squared(", num_preds,") = ", X_FN, " p = ", round(X_FN_p,5),
       "\nP values for each of the predictors versus the full model = ",
-      round(Pv[2], 5), "  ", round(Pv[3], 5), "  ",
-      round(Pv[4], 5), "  ", round(Pv[5], 5), "  ",
-      round(Pv[6], 5), "  ", round(Pv[5], 5), "\n")
+      format.pval(Pv[2], 4), "  ", format.pval(Pv[3], 4), "  ",
+      format.pval(Pv[4], 4), "  ", format.pval(Pv[5], 4), "  ",
+      format.pval(Pv[6], 4), "  ", format.pval(Pv[5], 4), "\n")
 
   invisible(list(S.FNc = S_FNc, S.each = S, chi.sq.FN = X_FN, df = num_preds,
                chi.sq.FN.p = X_FN_p, p.vals = Pv[1:num_preds+1]))

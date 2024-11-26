@@ -118,6 +118,8 @@ L_2way_Factorial_ANOVA <- function(data, factor1, factor2, contrast1=NULL, contr
   F1 <- factor1
   F2 <- factor2
 
+  dframe <- data.frame(dat,factor1,factor2)
+
   options(contrasts = c("contr.sum","contr.poly")) # for type III SS
   model <- lm(dat~F1*F2)
   m1 <- drop1(model, .~., test="F")
@@ -173,7 +175,13 @@ L_2way_Factorial_ANOVA <- function(data, factor1, factor2, contrast1=NULL, contr
       }
     }
 
-  interaction.plot(F1, F2, dat, ylab="Means")
+  interaction.plot(F1, F2, dat, lwd=2,ylab="Means")
+
+#    plot <-   interaction.plot(Factor1, Factor2, plotData$dep,
+#                             xlab = self$options$factor1, trace.label = self$options$factor2, lwd=2, ylab="Means")
+#  lines(xv,yv,lty=3,col="red") # add mean as dashed line
+#  text(x=nl,y=gm,pos=4,label = "Grand mean", col="red")
+
 
   Fval <- m1$`F value`[2:4]
   Pval <- m1$`Pr(>F)`[2:4]
@@ -189,13 +197,13 @@ L_2way_Factorial_ANOVA <- function(data, factor1, factor2, contrast1=NULL, contr
       "\n Support for contrast 1 versus main effects = ", if (!is.null(contrast1)) round(S_c1Mc,3),
       "\n Support for contrast 1 versus contrast 2 = ", if (!is.null(contrast2)) round(S_c1c2,3),
       "\n\nFirst factor main effect F(", dfv[1],",", dfres,") = ", round(Fval[1],3),
-      ", p = ", Pval[1], ", partial eta-squared = ", round(eta_sq_1,3),
+      ", p = ", format.pval(Pval[1],4), ", partial eta-squared = ", round(eta_sq_1,3),
       "\n Second factor main effect F(", dfv[2],",", dfres,") = ", round(Fval[2],3),
-      ", p = ", Pval[2], ", partial eta-squared = ", round(eta_sq_2,3),
+      ", p = ", format.pval(Pval[2],4), ", partial eta-squared = ", round(eta_sq_2,3),
       "\n Interaction F(", dfv[3],",", dfres,") = ", round(Fval[3],3),
-      ", p = ", Pval[3],  ", partial eta-squared = ", round(eta_sq_12,3),
+      ", p = ", format.pval(Pval[3],4),  ", partial eta-squared = ", round(eta_sq_12,3),
       "\n Contrast 1 F(1,",dfres,") = ", if (!is.null(contrast1)) round(Fval_c1,3),
-      ", p = ", Pval_c1, "\n ")
+      ", p = ", format.pval(Pval_c1,4), "\n ")
 
   invisible(list(S.12c = S_12c, S.12 = S_12, S.FMc = S_FMc, S.FM = S_FM,
                  S.c1.Mc = S_c1Mc, S.c1.M = S_c1M, S.c1.c2 = S_c1c2, Means = mean_out, df = c(m1$Df[2:4],dfres),

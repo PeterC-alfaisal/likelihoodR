@@ -157,10 +157,10 @@ L_2way_cat <- function(table, verb=TRUE) {
     round(ColMain_c,3), "\n Total support for whole table = ", round(Tot_S,3),
     "\n Support for trend across columns = ", if (length(col_sum)>=3) round(tr,3),
     "\n Support for variance differing more than expected = ", round(toogood,3),
-    "\n\n Chi-squared(", df, ") = ", round(chi.s,3), ",  p = ", signif(lt$p.value,5),
+    "\n\n Chi-squared(", df, ") = ", round(chi.s,3), ",  p = ", format.pval(lt$p.value,4),
     "\n Likelihood ratio test G(", df, ") = ", round(lrt,3),
     ", p = ", signif(LRt_p,5), ", N = ", grandtot,
-    "\n\n Trend p value from chi-squared = ", if (length(col_sum)>=3) trX$p.value, "\n ")
+    "\n\n Trend p value from chi-squared = ", if (length(col_sum)>=3) format.pval(trX$p.value,4), "\n ")
   }
 
   invisible(list(S.int = S2wayc, df = df, S.int.unc = S2way,
